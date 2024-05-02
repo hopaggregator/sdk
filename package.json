@@ -1,0 +1,19 @@
+{
+  "name": "hop-ag-sdk",
+  "version": "1.0.0",
+  "description": "Official Hop SDK to access Hop Aggregator",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hop Aggregator",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@mysten/sui.js": "^0.52.0",
+    "axios": "^1.6.8"
+  }
+}
