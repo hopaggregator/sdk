@@ -27,11 +27,11 @@ class HopApi {
    * Routes
    */
 
-  fetchQuote(quote: GetQuoteParams): GetQuoteResponse {
+  async fetchQuote(quote: GetQuoteParams): Promise<GetQuoteResponse> {
     return fetchQuote(this, quote);
   }
 
-  fetchTx(tx: GetTxParams): GetTxResponse {
+  async fetchTx(tx: GetTxParams): Promise<GetTxResponse> {
     return fetchTx(this, tx);
   }
 }

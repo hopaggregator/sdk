@@ -14,7 +14,7 @@ interface GetTxResponse {
   amount_out: bigint;
 }
 
-function fetchTx(client: HopApi, params: GetTxParams): GetTxResponse {
+async function fetchTx(client: HopApi, params: GetTxParams): Promise<GetTxResponse> {
   return { amount_in: 0n, amount_out: 0n, token_in: "", token_out: "" };
 }
 

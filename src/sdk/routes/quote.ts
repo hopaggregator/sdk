@@ -13,12 +13,12 @@ interface GetQuoteResponse {
   amount_out: bigint;
 }
 
-function fetchQuote(client: HopApi, params: GetQuoteParams): GetQuoteResponse {
+async function fetchQuote(client: HopApi, params: GetQuoteParams): Promise<GetQuoteResponse> {
   return {
     amount_in: 0n,
     token_in: "",
     token_out: "",
-    amount_out: 0,
+    amount_out: 0n,
   };
 }
 
