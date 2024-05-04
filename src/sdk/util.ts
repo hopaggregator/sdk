@@ -6,17 +6,34 @@ interface RequestParams {
   method: 'get' | 'post'
 }
 
+interface TokenAmount {
+  token: string,
+  amount: bigint
+}
+
+interface Trade {
+  amount_in: TokenAmount,
+  amount_out: TokenAmount
+}
+
+interface SwapAPIResponse {
+  total_tests: bigint,
+  errors: number,
+  trade: Trade | null,
+  tx: string | null
+}
+
 async function makeRequest(
   route: string,
   options: RequestParams
-): Promise<object | null> {
+): Promise<SwapAPIResponse | null> {
   const response = await axios({
     method: options.method,
     url: `${API_SERVER_PREFIX}/${route}`,
-    headers: {
-      "x-hop-api-key": options.api_key
-    },
-    data: options.data
+    data: {
+      ...options.data,
+      "api_key": options.api_key
+    }
   });
 
   if(response.status != 200) {
@@ -24,7 +41,7 @@ async function makeRequest(
     return null;
   }
 
-  return response.data;
+  return response.data as SwapAPIResponse;
 }
 
 export {
