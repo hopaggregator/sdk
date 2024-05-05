@@ -19,17 +19,23 @@ interface GetTxResponse {
   transaction: TransactionBlock;
 }
 
-async function fetchTx(client: HopApi, params: GetTxParams): Promise<GetTxResponse | null> {
-  let user_input_coins: CoinStruct[] = [];
+interface InputToken {
+  object_id: string,
+  coin_type: string,
+  amount: bigint
+}
+
+async function fetchCoins(client: HopApi, sui_address: string, coin_type: string): Promise<InputToken[]> {
+  let coins: CoinStruct[] = [];
   let cursor = null;
 
-  // input coins
   do {
     let coin_response = await client.client.getCoins({
-      owner: params.sui_address,
+      owner: sui_address,
+      coinType: coin_type,
       cursor: cursor,
     });
-    user_input_coins.push(...coin_response.data);
+    coins.push(...coin_response.data);
 
     if(coin_response.hasNextPage) {
       cursor = coin_response.nextCursor;
@@ -38,12 +44,25 @@ async function fetchTx(client: HopApi, params: GetTxParams): Promise<GetTxRespon
     }
   } while(cursor != null);
 
-  // gas coin
-  let gas_coin = null;
-  // TODO: build gas coin
+  return coins.map(coin_struct => ({
+    object_id: coin_struct.coinObjectId,
+    coin_type: coin_struct.coinType,
+    amount: BigInt(coin_struct.balance)
+  }));
+}
+
+async function fetchTx(client: HopApi, params: GetTxParams): Promise<GetTxResponse | null> {
+  // get input coins
+  let user_input_coins: InputToken[] = await fetchCoins(client, params.sui_address, params.token_in);
+  let gas_coins: InputToken[] = user_input_coins;
+
+  // gas coins
+  if(params.token_in != "0x2::sui::SUI") {
+    gas_coins = await fetchCoins(client, params.sui_address, "0x2:sui::SUI");
+  }
 
   const response = await makeRequest('tx', {
-    api_key: client.api_key,
+    api_key: client.options.api_key,
     data: {
       amount_in: params.amount_in,
       token_in: params.token_in,
@@ -51,7 +70,7 @@ async function fetchTx(client: HopApi, params: GetTxParams): Promise<GetTxRespon
       builder_request: {
         sender_address: params.sui_address,
         user_input_coins,
-        gas_coin,
+        gas_coins,
         gas_budget: params.gas_budget
       }
     },
