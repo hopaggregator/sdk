@@ -5,6 +5,7 @@ import { fetchTx, GetTxParams, GetTxResponse } from "./routes/tx";
 interface HopApiOptions {
   api_key: string;
   fee_bps: number; // fee to charge in bps (50% split with Hop / max fee of 5%)
+  hop_server_url?: string;
 }
 
 class HopApi {

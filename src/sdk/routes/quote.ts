@@ -17,8 +17,13 @@ interface GetQuoteResponse {
 
 async function fetchQuote(client: HopApi, params: GetQuoteParams): Promise<GetQuoteResponse | null> {
   let response = await makeRequest("quote", {
+    hop_server_url: client.options.hop_server_url,
     api_key: client.options.api_key,
-    data: params as object,
+    data: {
+      token_in: params.token_in,
+      token_out: params.token_out,
+      amount_in: params.amount_in.toString()
+    },
     method: 'post'
   });
 
@@ -26,8 +31,8 @@ async function fetchQuote(client: HopApi, params: GetQuoteParams): Promise<GetQu
     return {
       token_in: response.trade.amount_in.token,
       token_out: response.trade.amount_out.token,
-      amount_in: response.trade.amount_in.amount,
-      amount_out: response.trade.amount_out.amount,
+      amount_in: BigInt(response.trade.amount_in.amount),
+      amount_out: BigInt(response.trade.amount_out.amount),
       amount_out_with_fee: getAmountOutWithCommission(response.trade.amount_out.amount, client.options.fee_bps),
     };
   }

@@ -2,6 +2,7 @@ import axios from "axios";
 import { API_SERVER_PREFIX, FEE_DENOMINATOR } from "./constants";
 
 interface RequestParams {
+  hop_server_url?: string,
   api_key: string,
   data: object,
   method: 'get' | 'post'
@@ -9,7 +10,7 @@ interface RequestParams {
 
 interface TokenAmount {
   token: string,
-  amount: bigint
+  amount: string
 }
 
 interface Trade {
@@ -18,7 +19,7 @@ interface Trade {
 }
 
 interface SwapAPIResponse {
-  total_tests: bigint,
+  total_tests: number,
   errors: number,
   trade: Trade | null,
   tx: string | null
@@ -28,28 +29,39 @@ async function makeRequest(
   route: string,
   options: RequestParams
 ): Promise<SwapAPIResponse | null> {
-  const response = await axios({
-    method: options.method,
-    url: `${API_SERVER_PREFIX}/${route}`,
-    data: {
-      ...options.data,
-      "api_key": options.api_key
-    }
-  });
+  try {
+    const response = await axios({
+      method: options.method,
+      url: `${options.hop_server_url || API_SERVER_PREFIX}/${route}`,
+      data: {
+        ...options.data,
+        "api_key": options.api_key
+      }
+    });
 
-  if(response.status != 200) {
-    console.error(`HopApi > Error on request '/${route}' : ${response.statusText}`);
-    return null;
+    if(response.status != 200) {
+      console.error(`HopApi > Error on request '/${route}' : ${response.statusText}`);
+      return null;
+    }
+
+    return response.data as SwapAPIResponse;
+  } catch(error) {
+    console.error(error);
+    console.error(`HopApi > Error on request '/${route}' : ${error.response.data}`);
   }
 
-  return response.data as SwapAPIResponse;
+  return null;
 }
 
 function getAmountOutWithCommission(
-  amount_out: bigint,
+  amount_out: string,
   fee_bps: number
 ): bigint {
-  return BigInt((amount_out * (FEE_DENOMINATOR - BigInt(fee_bps))).toString(0));
+  if(fee_bps == 0) {
+    return BigInt(amount_out);
+  }
+
+  return BigInt(((BigInt(amount_out) * (FEE_DENOMINATOR - BigInt(fee_bps))) / BigInt(FEE_DENOMINATOR)).toString());
 }
 
 export {

@@ -8,7 +8,7 @@ interface GetTxParams {
   token_out: string;
   amount_in: bigint;
   sui_address: string;
-  gas_budget: number | 1e9;
+  gas_budget?: number;
 }
 
 interface GetTxResponse {
@@ -23,7 +23,7 @@ interface GetTxResponse {
 interface InputToken {
   object_id: string,
   coin_type: string,
-  amount: bigint
+  amount: string
 }
 
 async function fetchCoins(client: HopApi, sui_address: string, coin_type: string): Promise<InputToken[]> {
@@ -48,31 +48,35 @@ async function fetchCoins(client: HopApi, sui_address: string, coin_type: string
   return coins.map(coin_struct => ({
     object_id: coin_struct.coinObjectId,
     coin_type: coin_struct.coinType,
-    amount: BigInt(coin_struct.balance)
+    amount: coin_struct.balance
   }));
 }
 
 async function fetchTx(client: HopApi, params: GetTxParams): Promise<GetTxResponse | null> {
   // get input coins
   let user_input_coins: InputToken[] = await fetchCoins(client, params.sui_address, params.token_in);
-  let gas_coins: InputToken[] = user_input_coins;
+  let gas_coins: string[] = [];
 
   // gas coins
   if(params.token_in != "0x2::sui::SUI") {
-    gas_coins = await fetchCoins(client, params.sui_address, "0x2:sui::SUI");
+    let fetched_gas_coins = await fetchCoins(client, params.sui_address, "0x2:sui::SUI");
+    gas_coins = fetched_gas_coins.map((struct) => struct.object_id);
+  } else {
+    gas_coins = user_input_coins.map((struct) => struct.object_id);
   }
 
   const response = await makeRequest('tx', {
+    hop_server_url: client.options.hop_server_url,
     api_key: client.options.api_key,
     data: {
-      amount_in: params.amount_in,
+      amount_in: params.amount_in.toString(),
       token_in: params.token_in,
       token_out: params.token_out,
       builder_request: {
         sender_address: params.sui_address,
         user_input_coins,
         gas_coins,
-        gas_budget: params.gas_budget
+        gas_budget: params.gas_budget | 1e9
       }
     },
     method: 'post'
@@ -83,8 +87,8 @@ async function fetchTx(client: HopApi, params: GetTxParams): Promise<GetTxRespon
     return {
       token_in: response.trade.amount_in.token,
       token_out: response.trade.amount_out.token,
-      amount_in: response.trade.amount_in.amount,
-      amount_out: response.trade.amount_out.amount,
+      amount_in: BigInt(response.trade.amount_in.amount),
+      amount_out: BigInt(response.trade.amount_out.amount),
       amount_out_with_fee: getAmountOutWithCommission(response.trade.amount_out.amount, client.options.fee_bps),
       transaction: tx_block
     };
