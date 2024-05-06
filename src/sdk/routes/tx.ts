@@ -84,6 +84,7 @@ async function fetchTx(client: HopApi, params: GetTxParams): Promise<GetTxRespon
 
   if(response != null) {
     const tx_block = TransactionBlock.from(response.tx);
+    console.log(response.tx);
     return {
       token_in: response.trade.amount_in.token,
       token_out: response.trade.amount_out.token,
