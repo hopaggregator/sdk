@@ -20,13 +20,18 @@ interface GetTxResponse {
   transaction: TransactionBlock;
 }
 
-interface InputToken {
+interface CoinId {
   object_id: string,
+  version: string,
+}
+
+interface InputToken {
+  object_id: CoinId,
   coin_type: string,
   amount: string
 }
 
-async function fetchCoins(client: HopApi, sui_address: string, coin_type: string): Promise<InputToken[]> {
+async function fetchCoins(client: HopApi, sui_address: string, coin_type: string, max=-1): Promise<InputToken[]> {
   let coins: CoinStruct[] = [];
   let cursor = null;
 
@@ -34,9 +39,14 @@ async function fetchCoins(client: HopApi, sui_address: string, coin_type: string
     let coin_response = await client.client.getCoins({
       owner: sui_address,
       coinType: coin_type,
-      cursor: cursor,
+      cursor: cursor
     });
     coins.push(...coin_response.data);
+
+    // if you only want x coins
+    if(max != -1 && coins.length >= max) {
+      break;
+    }
 
     if(coin_response.hasNextPage) {
       cursor = coin_response.nextCursor;
@@ -46,7 +56,10 @@ async function fetchCoins(client: HopApi, sui_address: string, coin_type: string
   } while(cursor != null);
 
   return coins.map(coin_struct => ({
-    object_id: coin_struct.coinObjectId,
+    object_id: {
+      object_id: coin_struct.coinObjectId,
+      version: coin_struct.version
+    },
     coin_type: coin_struct.coinType,
     amount: coin_struct.balance
   }));
@@ -55,9 +68,12 @@ async function fetchCoins(client: HopApi, sui_address: string, coin_type: string
 async function fetchTx(client: HopApi, params: GetTxParams): Promise<GetTxResponse | null> {
   // get input coins
   let user_input_coins: InputToken[] = await fetchCoins(client, params.sui_address, params.token_in);
-  let gas_coins: string[] = [];
+  // add any input coins that match user type
+  let single_output_coin: InputToken[] = await fetchCoins(client, params.sui_address, params.token_out, 1);
+  user_input_coins.push(...single_output_coin);
 
   // gas coins
+  let gas_coins: CoinId[];
   if(params.token_in != "0x2::sui::SUI") {
     let fetched_gas_coins = await fetchCoins(client, params.sui_address, "0x2:sui::SUI");
     gas_coins = fetched_gas_coins.map((struct) => struct.object_id);
