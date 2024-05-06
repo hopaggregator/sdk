@@ -1,4 +1,5 @@
 import axios from "axios";
+import { API_SERVER_PREFIX, FEE_DENOMINATOR } from "./constants";
 
 interface RequestParams {
   api_key: string,
@@ -44,7 +45,15 @@ async function makeRequest(
   return response.data as SwapAPIResponse;
 }
 
+function getAmountOutWithCommission(
+  amount_out: bigint,
+  fee_bps: number
+): bigint {
+  return BigInt((amount_out * (FEE_DENOMINATOR - BigInt(fee_bps))).toString(0));
+}
+
 export {
   RequestParams,
-  makeRequest
+  makeRequest,
+  getAmountOutWithCommission
 }

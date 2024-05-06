@@ -1,5 +1,5 @@
 import { HopApi } from "../api";
-import { makeRequest } from "../util";
+import { getAmountOutWithCommission, makeRequest } from "../util";
 
 interface GetQuoteParams {
   token_in: string;
@@ -12,21 +12,23 @@ interface GetQuoteResponse {
   amount_in: bigint;
   token_out: string;
   amount_out: bigint;
+  amount_out_with_fee: bigint;
 }
 
 async function fetchQuote(client: HopApi, params: GetQuoteParams): Promise<GetQuoteResponse | null> {
-  let data = await makeRequest("quote", {
-    api_key: client.api_key,
+  let response = await makeRequest("quote", {
+    api_key: client.options.api_key,
     data: params as object,
     method: 'post'
   });
 
-  if(data != null) {
+  if(response != null) {
     return {
-      amount_in: data.amount_in,
-      amount_out: data.amount_out,
-      token_in: data.token_in,
-      token_out: data.token_out
+      token_in: response.trade.amount_in.token,
+      token_out: response.trade.amount_out.token,
+      amount_in: response.trade.amount_in.amount,
+      amount_out: response.trade.amount_out.amount,
+      amount_out_with_fee: getAmountOutWithCommission(response.trade.amount_out.amount, client.options.fee_bps),
     };
   }
 

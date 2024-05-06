@@ -1,7 +1,7 @@
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { CoinStruct } from "@mysten/sui.js/client";
 import { HopApi } from "../api";
-import { makeRequest } from "../util";
+import { getAmountOutWithCommission, makeRequest } from "../util";
 
 interface GetTxParams {
   token_in: string;
@@ -16,6 +16,7 @@ interface GetTxResponse {
   amount_in: bigint;
   token_out: string;
   amount_out: bigint;
+  amount_out_with_fee: bigint;
   transaction: TransactionBlock;
 }
 
@@ -84,6 +85,7 @@ async function fetchTx(client: HopApi, params: GetTxParams): Promise<GetTxRespon
       token_out: response.trade.amount_out.token,
       amount_in: response.trade.amount_in.amount,
       amount_out: response.trade.amount_out.amount,
+      amount_out_with_fee: getAmountOutWithCommission(response.trade.amount_out.amount, client.options.fee_bps),
       transaction: tx_block
     };
   }
