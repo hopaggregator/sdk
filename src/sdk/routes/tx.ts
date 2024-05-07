@@ -128,7 +128,6 @@ async function fetchTx(
 
   if (response != null) {
     const tx_block = createFrontendTxBlock(response.tx);
-    console.log(tx_block.serialize());
 
     return {
       token_in: response.trade.amount_in.token,
