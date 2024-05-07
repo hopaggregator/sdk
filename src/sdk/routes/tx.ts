@@ -9,6 +9,7 @@ interface GetTxParams {
   amount_in: bigint;
   sui_address: string;
   gas_budget?: number;
+  max_slippage_bps?: number;
 }
 
 interface GetTxResponse {
@@ -114,7 +115,12 @@ async function fetchTx(
         sender_address: params.sui_address,
         user_input_coins,
         gas_coins,
+
         gas_budget: params.gas_budget | 1e9,
+        max_slippage_bps: params.max_slippage_bps,
+
+        api_fee_wallet: client.options.fee_wallet,
+        api_fee_bps: client.options.fee_bps,
       },
     },
     method: "post",
