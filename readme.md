@@ -2,7 +2,7 @@
 
 Use this library to interact with [Hop Aggregator](hop.ag)'s swap.
 
-`npm install hop-ag-sdk`
+`npm install @hop.ag/sdk`
 
 #### Initialize
 
@@ -11,14 +11,19 @@ import { HopApi } from "hop-ag-sdk";
 import { getFullnodeUrl } from "@mysten/sui.js/client";
 
 const rpc_url = getFullNodeUrl("mainnet");
-const hop_api_key = "YOUR_API_KEY";
+const hop_api_options = {
+  api_key: "",
+  fee_bps: 0,
+  fee_wallet: "0xsuiwallet"
+};
 
-const sdk = HopApi(rpc_url, hop_api_key);
+const sdk = HopApi(rpc_url, hop_ap_options);
 ```
 
 To use the Hop Aggregator API, please create an api key [here](https://hop.ag) first.
 
 #### Get a Swap Quote
+Call this first to display the expected amount out.
 
 ```typescript
 const quote = await sdk.fetchQuote({
@@ -29,12 +34,16 @@ const quote = await sdk.fetchQuote({
 ```
 
 #### Get a Swap Transaction
+Call this when a user clicks trade and wants to execute a transaction.
 
 ```typescript
-const tx = await sdk.fetchQuote({
+const tx = await sdk.fetchTx({
   token_in: "",
   token_out: "",
   amount_in: 0,
   sui_address: "0x123",
+  
+  gas_budget: 1e9, // optional default is 1e9
+  max_slippage_bps: 100, // optional default is 1%
 });
 ```
