@@ -64,6 +64,7 @@ async function fetchCoins(
     object_id: {
       object_id: coin_struct.coinObjectId,
       version: coin_struct.version,
+      digest: coin_struct.digest,
     },
     coin_type: coin_struct.coinType,
     amount: coin_struct.balance,
@@ -122,6 +123,7 @@ async function fetchTx(
   if (response != null) {
     const tx_block = createFrontendTxBlock(response.tx);
     console.log(tx_block.serialize());
+
     return {
       token_in: response.trade.amount_in.token,
       token_out: response.trade.amount_out.token,
