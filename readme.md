@@ -47,3 +47,6 @@ const tx = await sdk.fetchTx({
   max_slippage_bps: 100, // optional default is 1%
 });
 ```
+
+#### Attribution
+Please link to and/or mention `Powered by Hop` if you are using this SDK.

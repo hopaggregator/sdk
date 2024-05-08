@@ -1,6 +1,6 @@
 {
   "name": "@hop.ag/sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Official Hop SDK to access Hop Aggregator",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
