@@ -97,7 +97,7 @@ async function fetchTx(
     let fetched_gas_coins = await fetchCoins(
       client,
       params.sui_address,
-      "0x2:sui::SUI",
+      "0x2::sui::SUI",
     );
     gas_coins = fetched_gas_coins.map((struct) => struct.object_id);
   } else {
