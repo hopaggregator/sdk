@@ -38,9 +38,7 @@ Call this when a user clicks trade and wants to execute a transaction.
 
 ```typescript
 const tx = await sdk.fetchTx({
-  token_in: "",
-  token_out: "",
-  amount_in: 0,
+  trade: quote.trade,
   sui_address: "0x123",
   
   gas_budget: 1e9, // optional default is 1e9

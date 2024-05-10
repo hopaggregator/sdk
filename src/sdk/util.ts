@@ -13,9 +13,11 @@ interface TokenAmount {
   amount: string
 }
 
-interface Trade {
+export interface Trade {
   amount_in: TokenAmount,
-  amount_out: TokenAmount
+  amount_out: TokenAmount,
+  nodes: any,
+  edges: any
 }
 
 interface SwapAPIResponse {

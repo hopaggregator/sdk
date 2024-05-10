@@ -1,23 +1,17 @@
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { CoinStruct } from "@mysten/sui.js/client";
 import { HopApi } from "../api";
-import { getAmountOutWithCommission, makeRequest } from "../util";
+import { getAmountOutWithCommission, makeRequest, Trade } from "../util";
 
 interface GetTxParams {
-  token_in: string;
-  token_out: string;
-  amount_in: bigint;
+  trade: Trade;
   sui_address: string;
+
   gas_budget?: number;
   max_slippage_bps?: number;
 }
 
 interface GetTxResponse {
-  token_in: string;
-  amount_in: bigint;
-  token_out: string;
-  amount_out: bigint;
-  amount_out_with_fee: bigint;
   transaction: TransactionBlock;
 }
 
@@ -80,20 +74,20 @@ async function fetchTx(
   let user_input_coins: InputToken[] = await fetchCoins(
     client,
     params.sui_address,
-    params.token_in,
+    params.trade.amount_in.token,
   );
   // add any input coins that match user type
   let single_output_coin: InputToken[] = await fetchCoins(
     client,
     params.sui_address,
-    params.token_out,
+    params.trade.amount_out.token,
     1,
   );
   user_input_coins.push(...single_output_coin);
 
   // gas coins
   let gas_coins: CoinId[];
-  if (params.token_in != "0x2::sui::SUI") {
+  if (params.trade.amount_in.token != "0x2::sui::SUI") {
     let fetched_gas_coins = await fetchCoins(
       client,
       params.sui_address,
@@ -104,13 +98,11 @@ async function fetchTx(
     gas_coins = user_input_coins.map((struct) => struct.object_id);
   }
 
-  const response = await makeRequest("tx", {
+  const response = await makeRequest("tx/compile", {
     hop_server_url: client.options.hop_server_url,
     api_key: client.options.api_key,
     data: {
-      amount_in: params.amount_in.toString(),
-      token_in: params.token_in,
-      token_out: params.token_out,
+      trade: params.trade,
       builder_request: {
         sender_address: params.sui_address,
         user_input_coins,
@@ -130,14 +122,6 @@ async function fetchTx(
     const tx_block = createFrontendTxBlock(response.tx);
 
     return {
-      token_in: response.trade.amount_in.token,
-      token_out: response.trade.amount_out.token,
-      amount_in: BigInt(response.trade.amount_in.amount),
-      amount_out: BigInt(response.trade.amount_out.amount),
-      amount_out_with_fee: getAmountOutWithCommission(
-        response.trade.amount_out.amount,
-        client.options.fee_bps,
-      ),
       transaction: tx_block,
     };
   }
