@@ -17,6 +17,7 @@ export const builderRequestSchema = z.object({
     }),
   ),
   gas_coins: z.array(coinIdSchema),
+  gas_budget: z.number(),
   max_slippage_bps: z.optional(z.number()),
   api_fee_bps: z.optional(z.number()),
   api_fee_wallet: z.optional(z.string()),
