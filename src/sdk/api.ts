@@ -53,11 +53,11 @@ export class HopApi {
    * Routes
    */
 
-  async fetchQuote(quote: GetQuoteParams): Promise<GetQuoteResponse | null> {
+  async fetchQuote(quote: GetQuoteParams): Promise<GetQuoteResponse> {
     return fetchQuote(this, quote);
   }
 
-  async fetchTx(tx: GetTxParams): Promise<GetTxResponse | null> {
+  async fetchTx(tx: GetTxParams): Promise<GetTxResponse> {
     return fetchTx(this, tx);
   }
 }

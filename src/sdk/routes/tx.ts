@@ -71,7 +71,7 @@ async function fetchCoins(
 export async function fetchTx(
   client: HopApi,
   params: GetTxParams,
-): Promise<GetTxResponse | null> {
+): Promise<GetTxResponse> {
   // get input coins
   let user_input_coins: InputToken[] = await fetchCoins(
     client,
@@ -133,7 +133,7 @@ export async function fetchTx(
     };
   }
 
-  return null;
+  throw new Error("Could not construct transaction");
 }
 
 const createFrontendTxBlock = (serialized: string): TransactionBlock => {
