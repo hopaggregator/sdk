@@ -44,6 +44,7 @@ export type PoolExtra = z.infer<typeof poolExtraSchema>;
 
 const tradePoolSchema = z.object({
   object_id: z.string(),
+  initial_shared_version: z.number().nullable(),
   sui_exchange: z.nativeEnum(SuiExchange),
   tokens: z.array(z.string()).nonempty(),
   is_active: z.boolean(),

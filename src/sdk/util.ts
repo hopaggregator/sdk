@@ -52,7 +52,7 @@ export async function makeAPIRequest<O>({
   } catch (error) {
     console.error(error);
     throw new Error(
-      `HopApi > Error on request '/${route}' : ${(error as any).response.data}`,
+      `HopApi > Error on request '/${route}' : ${(error as Error).message}`,
     );
   }
 }
