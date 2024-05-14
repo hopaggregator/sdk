@@ -7,17 +7,17 @@ Use this library to interact with [Hop Aggregator](hop.ag)'s swap.
 #### Initialize
 
 ```typescript
-import { HopApi } from "hop-ag-sdk";
+import { HopApi, HopApiOptions } from "hop-ag-sdk";
 import { getFullnodeUrl } from "@mysten/sui.js/client";
 
 const rpc_url = getFullNodeUrl("mainnet");
-const hop_api_options = {
+const hop_api_options: HopApiOptions = {
   api_key: "",
   fee_bps: 0,
   fee_wallet: "0xsuiwallet"
 };
 
-const sdk = HopApi(rpc_url, hop_ap_options);
+const sdk = HopApi(rpc_url, hop_api_options);
 ```
 
 To use the Hop Aggregator API, please create an api key [here](https://hop.ag) first.

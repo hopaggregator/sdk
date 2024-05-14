@@ -76,6 +76,11 @@ async function fetchTx(
     params.sui_address,
     params.trade.amount_in.token,
   );
+  if(user_input_coins.length == 0) {
+    console.log(`HopApi > Error: sui address ${params.sui_address} does not have any input coins for tx.`);
+    return null;
+  }
+
   // add any input coins that match user type
   let single_output_coin: InputToken[] = await fetchCoins(
     client,
@@ -96,6 +101,10 @@ async function fetchTx(
     gas_coins = fetched_gas_coins.map((struct) => struct.object_id);
   } else {
     gas_coins = user_input_coins.map((struct) => struct.object_id);
+  }
+  if(gas_coins.length == 0) {
+    console.log(`HopApi > Error: sui address ${params.sui_address} does not have any gas coins for tx.`);
+    return null;
   }
 
   const response = await makeRequest("tx/compile", {
