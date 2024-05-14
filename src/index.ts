@@ -1,5 +1,1 @@
-import { HopApi } from "./sdk/api";
-
-export const HopSdk = {
-  HopApi
-};
+export { HopApi } from "./sdk/api.js";

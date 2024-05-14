@@ -1,9 +1,9 @@
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { CoinStruct } from "@mysten/sui.js/client";
-import { HopApi } from "../api";
-import { getAmountOutWithCommission, makeRequest, Trade } from "../util";
+import { HopApi } from "../api.js";
+import { makeRequest, Trade } from "../util.js";
 
-interface GetTxParams {
+export interface GetTxParams {
   trade: Trade;
   sui_address: string;
 
@@ -11,7 +11,7 @@ interface GetTxParams {
   max_slippage_bps?: number;
 }
 
-interface GetTxResponse {
+export interface GetTxResponse {
   transaction: TransactionBlock;
 }
 
@@ -66,7 +66,7 @@ async function fetchCoins(
   }));
 }
 
-async function fetchTx(
+export async function fetchTx(
   client: HopApi,
   params: GetTxParams,
 ): Promise<GetTxResponse | null> {
@@ -108,7 +108,7 @@ async function fetchTx(
         user_input_coins,
         gas_coins,
 
-        gas_budget: params.gas_budget | 1e9,
+        gas_budget: params.gas_budget ?? 1e9,
         max_slippage_bps: params.max_slippage_bps,
 
         api_fee_wallet: client.options.fee_wallet,
@@ -118,7 +118,7 @@ async function fetchTx(
     method: "post",
   });
 
-  if (response != null) {
+  if (response?.tx) {
     const tx_block = createFrontendTxBlock(response.tx);
 
     return {
@@ -154,5 +154,3 @@ const createFrontendTxBlock = (serialized: string): TransactionBlock => {
     }),
   );
 };
-
-export { GetTxParams, GetTxResponse, fetchTx };
