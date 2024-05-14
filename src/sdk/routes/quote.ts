@@ -1,5 +1,7 @@
 import { HopApi } from "../api.js";
-import { getAmountOutWithCommission, makeRequest, Trade } from "../util.js";
+import { swapAPIResponseSchema } from "../types/api.js";
+import { Trade } from "../types/trade.js";
+import { getAmountOutWithCommission, makeAPIRequest } from "../util.js";
 
 export interface GetQuoteParams {
   token_in: string;
@@ -15,16 +17,20 @@ export interface GetQuoteResponse {
 export async function fetchQuote(
   client: HopApi,
   params: GetQuoteParams,
-): Promise<GetQuoteResponse | null> {
-  let response = await makeRequest("quote", {
-    hop_server_url: client.options.hop_server_url,
-    api_key: client.options.api_key,
-    data: {
-      token_in: params.token_in,
-      token_out: params.token_out,
-      amount_in: params.amount_in.toString(),
+): Promise<GetQuoteResponse> {
+  const response = await makeAPIRequest({
+    route: "quote",
+    options: {
+      hop_server_url: client.options.hop_server_url,
+      api_key: client.options.api_key,
+      data: {
+        token_in: params.token_in,
+        token_out: params.token_out,
+        amount_in: params.amount_in.toString(),
+      },
+      method: "post",
     },
-    method: "post",
+    responseSchema: swapAPIResponseSchema,
   });
 
   if (response?.trade) {
@@ -37,5 +43,5 @@ export async function fetchQuote(
     };
   }
 
-  return null;
+  throw new Error("Unable to get quote");
 }

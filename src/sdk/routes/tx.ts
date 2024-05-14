@@ -1,7 +1,9 @@
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { CoinStruct } from "@mysten/sui.js/client";
 import { HopApi } from "../api.js";
-import { makeRequest, Trade } from "../util.js";
+import { makeAPIRequest } from "../util.js";
+import { compileRequestSchema, compileResponseSchema } from "../types/api.js";
+import { Trade } from "../types/trade.js";
 
 export interface GetTxParams {
   trade: Trade;
@@ -98,29 +100,34 @@ export async function fetchTx(
     gas_coins = user_input_coins.map((struct) => struct.object_id);
   }
 
-  const response = await makeRequest("tx/compile", {
-    hop_server_url: client.options.hop_server_url,
-    api_key: client.options.api_key,
-    data: {
-      trade: params.trade,
-      builder_request: {
-        sender_address: params.sui_address,
-        user_input_coins,
-        gas_coins,
+  const compileRequest = compileRequestSchema.parse({
+    trade: params.trade,
+    builder_request: {
+      sender_address: params.sui_address,
+      user_input_coins,
+      gas_coins,
 
-        gas_budget: params.gas_budget ?? 1e9,
-        max_slippage_bps: params.max_slippage_bps,
+      gas_budget: params.gas_budget ?? 1e9,
+      max_slippage_bps: params.max_slippage_bps,
 
-        api_fee_wallet: client.options.fee_wallet,
-        api_fee_bps: client.options.fee_bps,
-      },
+      api_fee_wallet: client.options.fee_wallet,
+      api_fee_bps: client.options.fee_bps,
     },
-    method: "post",
   });
 
-  if (response?.tx) {
-    const tx_block = createFrontendTxBlock(response.tx);
+  const response = await makeAPIRequest({
+    route: "tx/compile",
+    options: {
+      hop_server_url: client.options.hop_server_url,
+      api_key: client.options.api_key,
+      data: compileRequest,
+      method: "post",
+    },
+    responseSchema: compileResponseSchema,
+  });
 
+  if (response.tx) {
+    const tx_block = createFrontendTxBlock(response.tx);
     return {
       transaction: tx_block,
     };

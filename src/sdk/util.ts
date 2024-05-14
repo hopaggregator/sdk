@@ -1,4 +1,5 @@
-import axios from "axios";
+import fetch from "cross-fetch";
+import { z } from "zod";
 import { API_SERVER_PREFIX, FEE_DENOMINATOR } from "./constants.js";
 
 export interface RequestParams {
@@ -8,69 +9,63 @@ export interface RequestParams {
   method: "get" | "post";
 }
 
-interface TokenAmount {
-  token: string;
-  amount: string;
-}
-
-export interface Trade {
-  amount_in: TokenAmount;
-  amount_out: TokenAmount;
-  nodes: any;
-  edges: any;
-}
-
-interface SwapAPIResponse {
-  total_tests: number;
-  errors: number;
-  trade: Trade | null;
-  tx: string | null;
-}
-
-export async function makeRequest(
-  route: string,
-  options: RequestParams,
-): Promise<SwapAPIResponse | null> {
+export async function makeAPIRequest<O>({
+  route,
+  options,
+  responseSchema,
+}: {
+  route: string;
+  options: RequestParams;
+  responseSchema: z.ZodSchema<O>;
+}): Promise<O> {
   try {
-    const response = await axios({
-      method: options.method,
-      url: `${options.hop_server_url || API_SERVER_PREFIX}/${route}`,
-      data: {
-        ...options.data,
-        api_key: options.api_key,
+    const response = await fetch(
+      `${options.hop_server_url || API_SERVER_PREFIX}/${route}`,
+      {
+        method: options.method,
+        body: JSON.stringify(
+          {
+            ...options.data,
+            api_key: options.api_key,
+          },
+          (_, v) => (typeof v === "bigint" ? v.toString() : v),
+        ),
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
-    if (response.status != 200) {
-      console.error(
+    if (response.status !== 200) {
+      throw new Error(
         `HopApi > Error on request '/${route}' : ${response.statusText}`,
       );
-      return null;
     }
 
-    return response.data as SwapAPIResponse;
+    const result = responseSchema.safeParse(await response.json());
+    if (result.success) {
+      return result.data;
+    } else {
+      console.error(result.error);
+      throw new Error(`Invalid response: ${result.error.message}`);
+    }
   } catch (error) {
     console.error(error);
-    console.error(
+    throw new Error(
       `HopApi > Error on request '/${route}' : ${(error as any).response.data}`,
     );
   }
-
-  return null;
 }
 
 export function getAmountOutWithCommission(
-  amount_out: string,
+  amount_out: bigint,
   fee_bps: number,
 ): bigint {
   if (fee_bps == 0) {
-    return BigInt(amount_out);
+    return amount_out;
   }
 
-  return BigInt(
-    (
-      (BigInt(amount_out) * (FEE_DENOMINATOR - BigInt(fee_bps))) /
-      BigInt(FEE_DENOMINATOR)
-    ).toString(),
+  return (
+    (amount_out * (FEE_DENOMINATOR - BigInt(fee_bps))) / BigInt(FEE_DENOMINATOR)
   );
 }
