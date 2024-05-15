@@ -3,7 +3,7 @@ name: Publish package to npm
 on:
   push:
     branches:
-      - main  # Set this to the branch you want to trigger the publish action
+      - main # Set this to the branch you want to trigger the publish action
 
 jobs:
   build:
@@ -11,19 +11,19 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '14'  # Specify the Node.js version
-          registry-url: 'https://registry.npmjs.org/'
+          node-version: "18" # Specify the Node.js version
+          registry-url: "https://registry.npmjs.org/"
 
       - name: Install dependencies
         run: npm install
 
       - name: Build package
-        run: npm run build  # Replace with your build script
+        run: npm run build # Replace with your build script
 
       - name: Publish to npm
         run: npm publish --access public

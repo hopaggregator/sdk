@@ -1,37 +1,47 @@
-import { HopApi } from "../api";
-import { getAmountOutWithCommission, makeRequest, Trade } from "../util";
+import { HopApi } from "../api.js";
+import { swapAPIResponseSchema } from "../types/api.js";
+import { Trade } from "../types/trade.js";
+import { getAmountOutWithCommission, makeAPIRequest } from "../util.js";
 
-interface GetQuoteParams {
+export interface GetQuoteParams {
   token_in: string;
   token_out: string;
   amount_in: bigint;
 }
 
-interface GetQuoteResponse {
+export interface GetQuoteResponse {
   amount_out_with_fee: bigint;
   trade: Trade;
 }
 
-async function fetchQuote(client: HopApi, params: GetQuoteParams): Promise<GetQuoteResponse | null> {
-  let response = await makeRequest("quote", {
-    hop_server_url: client.options.hop_server_url,
-    api_key: client.options.api_key,
-    data: {
-      token_in: params.token_in,
-      token_out: params.token_out,
-      amount_in: params.amount_in.toString()
+export async function fetchQuote(
+  client: HopApi,
+  params: GetQuoteParams,
+): Promise<GetQuoteResponse> {
+  const response = await makeAPIRequest({
+    route: "quote",
+    options: {
+      hop_server_url: client.options.hop_server_url,
+      api_key: client.options.api_key,
+      data: {
+        token_in: params.token_in,
+        token_out: params.token_out,
+        amount_in: params.amount_in.toString(),
+      },
+      method: "post",
     },
-    method: 'post'
+    responseSchema: swapAPIResponseSchema,
   });
 
-  if(response != null) {
+  if (response?.trade) {
     return {
-      amount_out_with_fee: getAmountOutWithCommission(response.trade.amount_out.amount, client.options.fee_bps),
+      amount_out_with_fee: getAmountOutWithCommission(
+        response.trade.amount_out.amount,
+        client.options.fee_bps,
+      ),
       trade: response.trade,
     };
   }
 
-  return null;
+  throw new Error("Unable to get quote");
 }
-
-export { GetQuoteParams, GetQuoteResponse, fetchQuote };

@@ -1,15 +1,19 @@
 import { SuiClient } from "@mysten/sui.js/client";
-import { fetchQuote, GetQuoteParams, GetQuoteResponse } from "./routes/quote";
-import { fetchTx, GetTxParams, GetTxResponse } from "./routes/tx";
+import {
+  fetchQuote,
+  GetQuoteParams,
+  GetQuoteResponse,
+} from "./routes/quote.js";
+import { fetchTx, GetTxParams, GetTxResponse } from "./routes/tx.js";
 
-interface HopApiOptions {
+export interface HopApiOptions {
   api_key: string;
   fee_bps: number; // fee to charge in bps (50% split with Hop / max fee of 5%)
   fee_wallet?: string; // sui address
   hop_server_url?: string;
 }
 
-class HopApi {
+export class HopApi {
   readonly client: SuiClient;
   readonly options: HopApiOptions;
 
@@ -34,10 +38,10 @@ class HopApi {
   private validate_fee() {
     let fee_bps = this.options.fee_bps;
 
-    if(fee_bps < 0) {
-      console.error('> fee_bps must be positive.');
-    } else if(fee_bps > 500) {
-      console.error('> fee_bps must be less than or equal to 5% (500 bps).');
+    if (fee_bps < 0) {
+      console.error("> fee_bps must be positive.");
+    } else if (fee_bps > 500) {
+      console.error("> fee_bps must be less than or equal to 5% (500 bps).");
     }
 
     this.options.fee_bps = Math.max(this.options.fee_bps, 0);
@@ -57,5 +61,3 @@ class HopApi {
     return fetchTx(this, tx);
   }
 }
-
-export { HopApi, HopApiOptions };

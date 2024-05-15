@@ -1,9 +1,11 @@
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { CoinStruct } from "@mysten/sui.js/client";
-import { HopApi } from "../api";
-import { getAmountOutWithCommission, makeRequest, Trade } from "../util";
+import { HopApi } from "../api.js";
+import { makeAPIRequest } from "../util.js";
+import { compileRequestSchema, compileResponseSchema } from "../types/api.js";
+import { Trade } from "../types/trade.js";
 
-interface GetTxParams {
+export interface GetTxParams {
   trade: Trade;
   sui_address: string;
 
@@ -11,7 +13,7 @@ interface GetTxParams {
   max_slippage_bps?: number;
 }
 
-interface GetTxResponse {
+export interface GetTxResponse {
   transaction: TransactionBlock;
 }
 
@@ -66,19 +68,20 @@ async function fetchCoins(
   }));
 }
 
-async function fetchTx(
+export async function fetchTx(
   client: HopApi,
   params: GetTxParams,
-): Promise<GetTxResponse | null> {
+): Promise<GetTxResponse> {
   // get input coins
   let user_input_coins: InputToken[] = await fetchCoins(
     client,
     params.sui_address,
     params.trade.amount_in.token,
   );
-  if(user_input_coins.length == 0) {
-    console.log(`HopApi > Error: sui address ${params.sui_address} does not have any input coins for tx.`);
-    return null;
+  if (user_input_coins.length == 0) {
+    throw new Error(
+      `HopApi > Error: sui address ${params.sui_address} does not have any input coins for tx.`,
+    );
   }
 
   // add any input coins that match user type
@@ -102,40 +105,46 @@ async function fetchTx(
   } else {
     gas_coins = user_input_coins.map((struct) => struct.object_id);
   }
-  if(gas_coins.length == 0) {
-    console.log(`HopApi > Error: sui address ${params.sui_address} does not have any gas coins for tx.`);
-    return null;
+  if (gas_coins.length === 0) {
+    throw new Error(
+      `HopApi > Error: sui address ${params.sui_address} does not have any gas coins for tx.`,
+    );
   }
 
-  const response = await makeRequest("tx/compile", {
-    hop_server_url: client.options.hop_server_url,
-    api_key: client.options.api_key,
-    data: {
-      trade: params.trade,
-      builder_request: {
-        sender_address: params.sui_address,
-        user_input_coins,
-        gas_coins,
+  const compileRequest = compileRequestSchema.parse({
+    trade: params.trade,
+    builder_request: {
+      sender_address: params.sui_address,
+      user_input_coins,
+      gas_coins,
 
-        gas_budget: params.gas_budget | 1e9,
-        max_slippage_bps: params.max_slippage_bps,
+      gas_budget: params.gas_budget ?? 1e9,
+      max_slippage_bps: params.max_slippage_bps,
 
-        api_fee_wallet: client.options.fee_wallet,
-        api_fee_bps: client.options.fee_bps,
-      },
+      api_fee_wallet: client.options.fee_wallet,
+      api_fee_bps: client.options.fee_bps,
     },
-    method: "post",
   });
 
-  if (response != null) {
-    const tx_block = createFrontendTxBlock(response.tx);
+  const response = await makeAPIRequest({
+    route: "tx/compile",
+    options: {
+      hop_server_url: client.options.hop_server_url,
+      api_key: client.options.api_key,
+      data: compileRequest,
+      method: "post",
+    },
+    responseSchema: compileResponseSchema,
+  });
 
+  if (response.tx) {
+    const tx_block = createFrontendTxBlock(response.tx);
     return {
       transaction: tx_block,
     };
   }
 
-  return null;
+  throw new Error("Could not construct transaction");
 }
 
 const createFrontendTxBlock = (serialized: string): TransactionBlock => {
@@ -163,5 +172,3 @@ const createFrontendTxBlock = (serialized: string): TransactionBlock => {
     }),
   );
 };
-
-export { GetTxParams, GetTxResponse, fetchTx };

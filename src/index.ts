@@ -1,6 +1,2 @@
-import { HopApi, HopApiOptions } from "./sdk/api";
-
-export {
-  HopApi,
-  HopApiOptions
-};
+export { HopApi } from "./sdk/api.js";
+export type { HopApiOptions } from "./sdk/api.js";
