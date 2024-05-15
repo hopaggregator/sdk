@@ -12,10 +12,11 @@ async function quoteTest() {
     // @ts-ignore
     amount_in: 1_000_000_000n,
     token_in: "0x2::sui::SUI",
-    token_out: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN"
+    token_out:
+      "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
   });
 
-  console.log('result', result);
+  console.log("result", result);
 }
 
-quoteTest()
+quoteTest();

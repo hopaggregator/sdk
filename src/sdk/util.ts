@@ -20,7 +20,7 @@ export async function makeAPIRequest<O>({
 }): Promise<O> {
   try {
     const response = await fetch(
-      `${options.hop_server_url || API_SERVER_PREFIX}/${route}`,
+      `${options.hop_server_url ?? API_SERVER_PREFIX}/${route}`,
       {
         method: options.method,
         body: JSON.stringify(
