@@ -2,22 +2,34 @@
   "name": "@hop.ag/sdk",
   "version": "1.1.1",
   "description": "Official Hop SDK to access Hop Aggregator",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
   "scripts": {
     "test:quote": "npx tsx src/tests/quote.test.ts",
     "test:tx": "npx tsx src/tests/tx.test.ts",
-    "build": "tsc",
-    "pretty": "npx prettier . --write"
+    "build": "tsc && tsc --project tsconfig.cjs.json",
+    "pretty": "prettier . --write"
   },
   "author": "Hop Aggregator",
   "license": "ISC",
   "devDependencies": {
     "prettier": "3.2.5",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "@mysten/sui.js": "^0.52.0"
   },
   "dependencies": {
-    "@mysten/sui.js": "^0.52.0",
-    "axios": "^1.6.8"
+    "cross-fetch": "^4.0.0",
+    "tslib": "^2.6.2",
+    "zod": "^3.23.8"
+  },
+  "peerDependencies": {
+    "@mysten/sui.js": "^0.52.0"
   }
 }
