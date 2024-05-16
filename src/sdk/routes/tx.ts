@@ -129,7 +129,6 @@ export async function fetchTx(
   const response = await makeAPIRequest({
     route: "tx/compile",
     options: {
-      hop_server_url: client.options.hop_server_url,
       api_key: client.options.api_key,
       data: compileRequest,
       method: "post",

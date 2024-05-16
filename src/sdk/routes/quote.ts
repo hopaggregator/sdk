@@ -21,7 +21,6 @@ export async function fetchQuote(
   const response = await makeAPIRequest({
     route: "quote",
     options: {
-      hop_server_url: client.options.hop_server_url,
       api_key: client.options.api_key,
       data: {
         token_in: params.token_in,
