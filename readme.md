@@ -17,7 +17,7 @@ const hop_api_options: HopApiOptions = {
   fee_wallet: "0xsuiwallet",
 };
 
-const sdk = HopApi(rpc_url, hop_api_options);
+const sdk = new HopApi(rpc_url, hop_api_options);
 ```
 
 To use the Hop Aggregator API, please create an api key [here](https://hop.ag) first.
