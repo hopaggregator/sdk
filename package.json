@@ -1,8 +1,8 @@
 {
   "name": "@hop.ag/sdk",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Official Hop SDK to access Hop Aggregator",
-  "type": "module",
+  "type": "commonjs",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
