@@ -1,4 +1,4 @@
-import { HopApi } from "../sdk/api";
+import { HopApi } from "../index";
 import { getFullnodeUrl } from "@mysten/sui.js/client";
 
 // @ts-ignore
