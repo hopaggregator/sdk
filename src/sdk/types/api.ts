@@ -45,3 +45,14 @@ export const compileResponseSchema = z.object({
 });
 
 export type CompileResponse = z.infer<typeof compileResponseSchema>;
+
+export const tokensResponseSchema = z.object({
+  tokens: z.array(z.object({
+    coin_type: z.string(),
+    name: z.string(),
+    ticker: z.string(),
+    icon_url: z.string(),
+    decimals: z.number(),
+    token_order: z.nullable(z.number())
+  }))
+})

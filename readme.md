@@ -14,7 +14,7 @@ const rpc_url = getFullNodeUrl("mainnet");
 const hop_api_options: HopApiOptions = {
   api_key: "",
   fee_bps: 0,
-  fee_wallet: "0xsuiwallet",
+  fee_wallet: "0x2",
 };
 
 const sdk = new HopApi(rpc_url, hop_api_options);
@@ -46,6 +46,14 @@ const tx = await sdk.fetchTx({
   gas_budget: 1e9, // optional default is 1e9
   max_slippage_bps: 100, // optional default is 1%
 });
+```
+
+#### Get a list of Verified Tokens
+We maintain a list of verified SUI ecosystem tokens and their metadata. This
+endpoint returns a curated list - with ordering - for your application.
+
+```typescript
+const tokens = await sdk.fetchTokens();
 ```
 
 #### Attribution

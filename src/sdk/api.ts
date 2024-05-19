@@ -5,6 +5,7 @@ import {
   GetQuoteResponse,
 } from "./routes/quote.js";
 import { fetchTx, GetTxParams, GetTxResponse } from "./routes/tx.js";
+import { fetchTokens, GetTokensResponse } from "./routes/tokens";
 
 export interface HopApiOptions {
   api_key: string;
@@ -59,5 +60,9 @@ export class HopApi {
 
   async fetchTx(tx: GetTxParams): Promise<GetTxResponse> {
     return fetchTx(this, tx);
+  }
+
+  async fetchTokens(): Promise<GetTokensResponse> {
+    return fetchTokens(this);
   }
 }
