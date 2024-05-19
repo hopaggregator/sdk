@@ -8,7 +8,7 @@ export interface VerifiedToken {
   ticker: string;
   icon_url: string;
   decimals: number;
-  token_order?: number; // used for internal reasons
+  token_order?: number | null; // used for internal reasons
 }
 
 export interface GetTokensResponse {
