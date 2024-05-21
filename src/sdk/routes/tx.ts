@@ -83,6 +83,14 @@ export async function fetchTx(
       `HopApi > Error: sui address ${params.sui_address} does not have any input coins for tx.`,
     );
   }
+  let total_input = user_input_coins.reduce((c, t) => c + BigInt(t.amount), 0n);
+  if(total_input < params.trade.amount_in.amount) {
+    throw new Error(
+      `HopApi > Error: user does not have enough amount in for trade. 
+      User amount: ${total_input}. 
+      Trade amount: ${params.trade.amount_in.amount}`
+    )
+  }
 
   // add any input coins that match user type
   let single_output_coin: InputToken[] = await fetchCoins(
