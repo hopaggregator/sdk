@@ -4,7 +4,7 @@ import { getFullnodeUrl } from "@mysten/sui.js/client";
 // @ts-ignore
 async function txTest(): Promise<void> {
   const api = new HopApi(getFullnodeUrl("mainnet"), {
-    api_key: "hopapisKX7I30wPvo5YfN8Vx5P9r4cPh3nzVcS",
+    api_key: "",
     fee_bps: 0,
   });
 
