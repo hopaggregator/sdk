@@ -21,6 +21,7 @@ const poolExtraSchema = z.union([
     DEEPBOOK: z.object({
       pool_type: z.string(),
       lot_size: z.coerce.bigint(),
+      min_size: z.coerce.bigint()
     }),
   }),
   z.object({
