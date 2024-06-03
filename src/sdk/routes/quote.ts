@@ -22,6 +22,7 @@ export async function fetchQuote(
     route: "quote",
     options: {
       api_key: client.options.api_key,
+      hop_server_url: client.options.hop_server_url,
       data: {
         token_in: params.token_in,
         token_out: params.token_out,

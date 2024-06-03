@@ -138,6 +138,7 @@ export async function fetchTx(
     route: "tx/compile",
     options: {
       api_key: client.options.api_key,
+      hop_server_url: client.options.hop_server_url,
       data: compileRequest,
       method: "post",
     },

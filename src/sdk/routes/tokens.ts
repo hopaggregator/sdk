@@ -22,8 +22,9 @@ export async function fetchTokens(
     route: "tokens",
     options: {
       api_key: client.options.api_key,
+      hop_server_url: client.options.hop_server_url,
       data: {},
-      method: "post",
+      method: "post"
     },
     responseSchema: tokensResponseSchema,
   });
