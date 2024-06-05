@@ -1,6 +1,6 @@
 import { HopApi } from "../api.js";
-import { tokensResponseSchema } from "../types/api";
-import { makeAPIRequest } from "../util";
+import { tokensResponseSchema } from "../types/api.js";
+import { makeAPIRequest } from "../util.js";
 
 export interface VerifiedToken {
   coin_type: string;
@@ -12,27 +12,25 @@ export interface VerifiedToken {
 }
 
 export interface GetTokensResponse {
-  tokens: VerifiedToken[]
+  tokens: VerifiedToken[];
 }
 
-export async function fetchTokens(
-  client: HopApi,
-): Promise<GetTokensResponse> {
+export async function fetchTokens(client: HopApi): Promise<GetTokensResponse> {
   const response = await makeAPIRequest({
     route: "tokens",
     options: {
       api_key: client.options.api_key,
       hop_server_url: client.options.hop_server_url,
       data: {},
-      method: "post"
+      method: "post",
     },
     responseSchema: tokensResponseSchema,
   });
 
   if (response?.tokens) {
     return {
-      tokens: response.tokens
-    }
+      tokens: response.tokens,
+    };
   }
 
   throw new Error("Unable to get tokens");
