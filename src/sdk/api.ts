@@ -5,7 +5,7 @@ import {
   GetQuoteResponse,
 } from "./routes/quote.js";
 import { fetchTx, GetTxParams, GetTxResponse } from "./routes/tx.js";
-import { fetchTokens, GetTokensResponse } from "./routes/tokens";
+import { fetchTokens, GetTokensResponse } from "./routes/tokens.js";
 
 export interface HopApiOptions {
   api_key: string;

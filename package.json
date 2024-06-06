@@ -1,8 +1,8 @@
 {
   "name": "@hop.ag/sdk",
-  "version": "2.1.6",
+  "version": "2.2.0",
   "description": "Official Hop SDK to access Hop Aggregator",
-  "type": "commonjs",
+  "type": "module",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -16,7 +16,9 @@
     "test:quote": "npx tsx src/tests/quote.test.ts",
     "test:tx": "npx tsx src/tests/tx.test.ts",
     "test:tokens": "npx tsx src/tests/tokens.test.ts",
-    "build": "tsc && tsc --project tsconfig.cjs.json",
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc && echo '{\"type\":\"module\"}' > dist/esm/package.json",
+    "build:cjs": "tsc --project tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "pretty": "prettier . --write"
   },
   "author": "Hop Aggregator",

@@ -1,2 +1,2 @@
 export { HopApi } from "./sdk/api.js";
-export * from './types';
+export * from "./types/index.js";
