@@ -8,7 +8,7 @@ Use this library to interact with [Hop Aggregator](hop.ag)'s swap.
 
 ```typescript
 import { HopApi, HopApiOptions } from "@hop.ag/sdk";
-import { getFullnodeUrl } from "@mysten/sui.js/client";
+import { getFullnodeUrl } from "@mysten/sui/client";
 
 const rpc_url = getFullNodeUrl("mainnet");
 const hop_api_options: HopApiOptions = {
