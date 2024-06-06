@@ -1,5 +1,5 @@
-import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { CoinStruct } from "@mysten/sui.js/client";
+import { Transaction } from "@mysten/sui/transactions";
+import { CoinStruct } from "@mysten/sui/client";
 import { HopApi } from "../api.js";
 import { makeAPIRequest } from "../util.js";
 import { compileRequestSchema, compileResponseSchema } from "../types/api.js";
@@ -14,7 +14,7 @@ export interface GetTxParams {
 }
 
 export interface GetTxResponse {
-  transaction: TransactionBlock;
+  transaction: Transaction;
 }
 
 interface CoinId {
@@ -155,15 +155,15 @@ export async function fetchTx(
   throw new Error("Could not construct transaction");
 }
 
-const createFrontendTxBlock = (serialized: string): TransactionBlock => {
-  const txb = TransactionBlock.from(serialized);
-  const newInputs = txb.blockData.inputs.map((input) => {
-    if (input.type === "object") {
+const createFrontendTxBlock = (serialized: string): Transaction => {
+  const txb = Transaction.from(serialized);
+  const newInputs = txb.getData().inputs.map((input) => {
+    if (input.$kind === "Object") {
       const objectId =
-        input.value?.Object?.Shared?.objectId ??
-        input.value?.Object?.ImmOrOwned?.objectId;
+        input.Object?.SharedObject?.objectId ??
+        input.Object?.ImmOrOwnedObject?.objectId;
       if (!objectId) {
-        throw new Error(`Missing object ID for input ${input.index}`);
+        throw new Error(`Missing object ID for input ${input.$kind}`);
       }
       return {
         ...input,
@@ -172,9 +172,9 @@ const createFrontendTxBlock = (serialized: string): TransactionBlock => {
     }
     return input;
   });
-  return TransactionBlock.from(
+  return Transaction.from(
     JSON.stringify({
-      ...txb.blockData,
+      ...txb.getData(),
       gasConfig: {},
       inputs: newInputs,
     }),

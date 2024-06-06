@@ -1,12 +1,11 @@
 import { HopApi } from "../index";
-import { getFullnodeUrl } from "@mysten/sui.js/client";
+import { getFullnodeUrl } from "@mysten/sui/client";
 
 // @ts-ignore
 async function txTest(): Promise<void> {
   const api = new HopApi(getFullnodeUrl("mainnet"), {
     api_key: "hopapisKX7I30wPvo5YfN8Vx5P9r4cPh3nzVcS",
-    fee_bps: 0,
-    hop_server_url: "http://localhost:3002/api/v2"
+    fee_bps: 0
   });
 
   const quote_result = await api.fetchQuote({

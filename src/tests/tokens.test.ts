@@ -1,5 +1,5 @@
 import { HopApi } from "../index";
-import { getFullnodeUrl } from "@mysten/sui.js/client";
+import { getFullnodeUrl } from "@mysten/sui/client";
 
 // @ts-ignore
 async function tokensTest() {
