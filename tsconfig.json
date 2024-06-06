@@ -6,7 +6,7 @@
     "outDir": "./dist/esm",
 
     // build
-    "types": [],
+    "types": ["node"],
     "esModuleInterop": true,
     "preserveConstEnums": true,
     "skipLibCheck": true,
