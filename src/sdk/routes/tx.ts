@@ -92,6 +92,19 @@ export async function fetchTx(
     )
   }
 
+  // gas coins
+  let gas_coins: CoinId[];
+  if (params.trade.amount_in.token != "0x2::sui::SUI") {
+    let fetched_gas_coins = await fetchCoins(
+      client,
+      params.sui_address,
+      "0x2::sui::SUI",
+    );
+    gas_coins = fetched_gas_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
+  } else {
+    gas_coins = user_input_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
+  }
+
   // add any input coins that match user type
   let single_output_coin: InputToken[] = await fetchCoins(
     client,
@@ -101,18 +114,6 @@ export async function fetchTx(
   );
   user_input_coins.push(...single_output_coin);
 
-  // gas coins
-  let gas_coins: CoinId[];
-  if (params.trade.amount_in.token != "0x2::sui::SUI") {
-    let fetched_gas_coins = await fetchCoins(
-      client,
-      params.sui_address,
-      "0x2::sui::SUI",
-    );
-    gas_coins = fetched_gas_coins.map((struct) => struct.object_id);
-  } else {
-    gas_coins = user_input_coins.map((struct) => struct.object_id);
-  }
   if (gas_coins.length === 0) {
     throw new Error(
       `HopApi > Error: sui address ${params.sui_address} does not have any gas coins for tx.`,
@@ -126,7 +127,7 @@ export async function fetchTx(
       user_input_coins,
       gas_coins,
 
-      gas_budget: params.gas_budget ?? 1e9,
+      gas_budget: params.gas_budget ?? 1e8,
       max_slippage_bps: params.max_slippage_bps,
 
       api_fee_wallet: client.options.fee_wallet,
@@ -157,7 +158,9 @@ export async function fetchTx(
 
 const createFrontendTxBlock = (serialized: string): Transaction => {
   const txb = Transaction.from(serialized);
-  const newInputs = txb.getData().inputs.map((input) => {
+  const inputs = txb.getData().inputs;
+
+  const newInputs = inputs.map((input) => {
     if (input.$kind === "Object") {
       const objectId =
         input.Object?.SharedObject?.objectId ??
@@ -165,13 +168,17 @@ const createFrontendTxBlock = (serialized: string): Transaction => {
       if (!objectId) {
         throw new Error(`Missing object ID for input ${input.$kind}`);
       }
+
       return {
-        ...input,
-        value: objectId,
-      };
+        $kind: "UnresolvedObject",
+        UnresolvedObject: {
+          objectId,
+        }
+      }
     }
     return input;
   });
+
   return Transaction.from(
     JSON.stringify({
       ...txb.getData(),
