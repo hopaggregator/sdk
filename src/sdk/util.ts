@@ -28,7 +28,11 @@ export async function makeAPIRequest<O>({
             ...options.data,
             api_key: options.api_key,
           },
-          (_, v) => (typeof v === "bigint" ? parseInt(v.toString()) : v),
+          (_, v) => {
+            const isBigIntString = typeof v === 'string' && /^\d+n$/.test(v);
+            if (isBigIntString) v.slice(-1);
+            return typeof v === 'bigint' || isBigIntString ? parseInt(v.toString()) : v;
+          },
         ),
         headers: {
           "Content-Type": "application/json",

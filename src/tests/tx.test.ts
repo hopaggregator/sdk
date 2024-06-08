@@ -27,7 +27,7 @@ async function txTest(): Promise<void> {
     max_slippage_bps: 100
   });
 
-  console.log("result", tx_result.transaction.serialize());
+  // console.log("result", tx_result.transaction.serialize());
 }
 
 txTest();
