@@ -17,10 +17,12 @@ export interface HopApiOptions {
 export class HopApi {
   readonly client: SuiClient;
   readonly options: HopApiOptions;
+  readonly use_v2: boolean;
 
-  constructor(rpc_endpoint: string, options: HopApiOptions) {
+  constructor(rpc_endpoint: string, options: HopApiOptions, use_v2: boolean = true) {
     this.client = new SuiClient({ url: rpc_endpoint });
     this.options = options;
+    this.use_v2 = use_v2;
 
     this.validate_api_key();
     this.validate_fee();
