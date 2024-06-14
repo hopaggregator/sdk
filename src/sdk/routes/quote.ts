@@ -27,6 +27,7 @@ export async function fetchQuote(
         token_in: params.token_in,
         token_out: params.token_out,
         amount_in: params.amount_in.toString(),
+        use_alpha_router: true
       },
       method: "post",
     },
