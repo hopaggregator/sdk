@@ -39,6 +39,11 @@ const poolExtraSchema = z.union([
       coin_type_b: z.string(),
     }),
   }),
+  z.object({
+    FLOWX: z.object({
+      is_v3: z.boolean(),
+    })
+  })
 ]);
 
 export type PoolExtra = z.infer<typeof poolExtraSchema>;
