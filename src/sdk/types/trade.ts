@@ -42,7 +42,7 @@ const poolExtraSchema = z.union([
   z.object({
     FLOWX: z.object({
       is_v3: z.boolean(),
-      fee_rate: z.number().optional(),
+      fee_rate: z.number().nullish(),
     })
   })
 ]);
