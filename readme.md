@@ -45,6 +45,8 @@ const tx = await sdk.fetchTx({
 
   gas_budget: 1e9, // optional default is 1e9
   max_slippage_bps: 100, // optional default is 1%
+
+  return_output_coin_argument: false, // toggle to use the output coin in a ptb
 });
 ```
 
