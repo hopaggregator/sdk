@@ -162,7 +162,8 @@ export async function fetchTx(
       // slippage check
       // fee
       if(client.options.fee_bps > 0 && client.options.fee_wallet != undefined) {
-        output_coin = tx_block.blockData.transactions[tx_block.blockData.transactions.length - 3];
+        // @ts-ignore
+        output_coin = tx_block.blockData.transactions[tx_block.blockData.transactions.length - 3].destination as TransactionResult;
       } else {
         throw new Error("Fees must be enabled for output coin to be returned!");
       }
