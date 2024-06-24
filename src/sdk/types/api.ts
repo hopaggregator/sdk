@@ -21,6 +21,7 @@ export const builderRequestSchema = z.object({
   max_slippage_bps: z.optional(z.number()),
   api_fee_bps: z.optional(z.number()),
   api_fee_wallet: z.optional(z.string()),
+  return_output_coin_argument: z.optional(z.boolean())
 });
 
 export type BuilderRequest = z.infer<typeof builderRequestSchema>;
@@ -42,6 +43,7 @@ export type SwapAPIResponse = z.infer<typeof swapAPIResponseSchema>;
 
 export const compileResponseSchema = z.object({
   tx: z.string(),
+  output_coin: z.string().nullish(),
 });
 
 export type CompileResponse = z.infer<typeof compileResponseSchema>;

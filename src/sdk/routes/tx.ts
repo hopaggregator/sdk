@@ -1,4 +1,4 @@
-import { Transaction } from "@mysten/sui/transactions";
+import { Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { CoinStruct } from "@mysten/sui/client";
 import { HopApi } from "../api.js";
 import { makeAPIRequest } from "../util.js";
@@ -11,10 +11,14 @@ export interface GetTxParams {
 
   gas_budget?: number;
   max_slippage_bps?: number;
+
+  /* FOR PTB USE */
+  return_output_coin_argument?: boolean;
 }
 
 export interface GetTxResponse {
   transaction: Transaction;
+  output_coin: TransactionResult | undefined;
 }
 
 interface CoinId {
@@ -132,6 +136,8 @@ export async function fetchTx(
 
       api_fee_wallet: client.options.fee_wallet,
       api_fee_bps: client.options.fee_bps,
+
+      return_output_coin_argument: !!params.return_output_coin_argument,
     },
   });
 
@@ -148,8 +154,23 @@ export async function fetchTx(
 
   if (response.tx) {
     const tx_block = createFrontendTxBlock(response.tx);
+    let output_coin: TransactionResult | undefined = undefined;
+
+    if(params.return_output_coin_argument) {
+      // order
+      // last merge into final output coin
+      // slippage check
+      // fee
+      if(client.options.fee_bps > 0 && client.options.fee_wallet != undefined) {
+        output_coin = tx_block.blockData.transactions[tx_block.blockData.transactions.length - 3];
+      } else {
+        throw new Error("Fees must be enabled for output coin to be returned!");
+      }
+    }
+
     return {
       transaction: tx_block,
+      output_coin,
     };
   }
 
