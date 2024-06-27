@@ -21,6 +21,9 @@ export const builderRequestSchema = z.object({
   max_slippage_bps: z.optional(z.number()),
   api_fee_bps: z.optional(z.number()),
   api_fee_wallet: z.optional(z.string()),
+
+  base_transaction: z.optional(z.string()),
+  input_coin_argument: z.optional(z.any()),
   return_output_coin_argument: z.optional(z.boolean())
 });
 

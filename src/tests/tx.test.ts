@@ -26,10 +26,12 @@ async function txTest(): Promise<void> {
       "0x4466fe25550f648a4acd6823a90e1f96c77e1d37257ee3ed2d6e02a694984f73",
     gas_budget: 1e9,
     max_slippage_bps: 100,
-    return_output_coin_argument: true,
+    // return_output_coin_argument: true,
+    // base_transaction: tx,
+    // input_coin_argument: coin,
   });
 
-  console.log("result", tx_result.output_coin);
+  console.log("result", JSON.stringify(tx_result.transaction.blockData, null, 2));
 }
 
 txTest();

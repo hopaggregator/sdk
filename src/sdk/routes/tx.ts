@@ -1,4 +1,4 @@
-import { Transaction, TransactionResult } from "@mysten/sui/transactions";
+import { Transaction, Argument, TransactionResult } from "@mysten/sui/transactions";
 import { CoinStruct } from "@mysten/sui/client";
 import { HopApi } from "../api.js";
 import { makeAPIRequest } from "../util.js";
@@ -13,6 +13,8 @@ export interface GetTxParams {
   max_slippage_bps?: number;
 
   /* FOR PTB USE */
+  base_transaction?: Transaction;
+  input_coin_argument?: Argument,
   return_output_coin_argument?: boolean;
 }
 
@@ -124,6 +126,16 @@ export async function fetchTx(
     );
   }
 
+  if(params.input_coin_argument && !params.base_transaction) {
+    throw new Error("Input coin argument must be result from base transaction!");
+  }
+
+  const input_coin_argument = params.input_coin_argument ?
+    // @ts-ignore
+    { [params.input_coin_argument.$kind]: params.input_coin_argument[params.input_coin_argument.$kind] } :
+    undefined;
+  const base_transaction = params.base_transaction?.getDigest();
+
   const compileRequest = compileRequestSchema.parse({
     trade: params.trade,
     builder_request: {
@@ -137,6 +149,8 @@ export async function fetchTx(
       api_fee_wallet: client.options.fee_wallet,
       api_fee_bps: client.options.fee_bps,
 
+      base_transaction,
+      input_coin_argument,
       return_output_coin_argument: !!params.return_output_coin_argument,
     },
   });
