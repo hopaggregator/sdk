@@ -163,7 +163,9 @@ export async function fetchTx(
       // fee
       if(client.options.fee_bps > 0 && client.options.fee_wallet != undefined) {
         // @ts-ignore
-        output_coin = tx_block.blockData.transactions[tx_block.blockData.transactions.length - 3].destination as TransactionResult;
+        output_coin = tx_block.blockData.transactions.find((tx) => {
+          return tx.kind == 'MoveCall' && tx.target.endsWith('slippage::check_slippage_v2');
+        })?.arguments[0];
       } else {
         throw new Error("Fees must be enabled for output coin to be returned!");
       }
