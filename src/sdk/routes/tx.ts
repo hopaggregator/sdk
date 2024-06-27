@@ -165,6 +165,7 @@ export async function fetchTx(
         // @ts-ignore
         output_coin = tx_block.blockData.transactions.find((tx) => {
           return tx.kind == 'MoveCall' && tx.target.endsWith('slippage::check_slippage_v2');
+          // @ts-ignore
         })?.arguments[0];
       } else {
         throw new Error("Fees must be enabled for output coin to be returned!");
