@@ -161,7 +161,7 @@ export async function fetchTx(
       // last merge into final output coin
       // slippage check
       // fee
-      if(client.options.fee_bps > 0 && client.options.fee_wallet != undefined) {
+      if(client.options.fee_wallet != undefined) {
         // @ts-ignore
         output_coin = tx_block.blockData.transactions.find((tx) => {
           return tx.kind == 'MoveCall' && tx.target.endsWith('slippage::check_slippage_v2');
