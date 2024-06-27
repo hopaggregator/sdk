@@ -132,7 +132,7 @@ export async function fetchTx(
 
   const input_coin_argument = params.input_coin_argument ?
     // @ts-ignore
-    { [params.input_coin_argument.$kind]: params.input_coin_argument[params.input_coin_argument.$kind] } :
+    { [params.input_coin_argument.$kind]: ensure_array(params.input_coin_argument[params.input_coin_argument.$kind]) } :
     undefined;
   const base_transaction = params.base_transaction?.getDigest();
 
@@ -193,6 +193,14 @@ export async function fetchTx(
   }
 
   throw new Error("Could not construct transaction");
+}
+
+const ensure_array = (value: number | number[]): number[] => {
+  if (typeof value == "number") {
+    return [value];
+  } else {
+    return value;
+  }
 }
 
 const createFrontendTxBlock = (serialized: string): Transaction => {
