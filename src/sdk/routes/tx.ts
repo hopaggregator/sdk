@@ -14,7 +14,7 @@ export interface GetTxParams {
 
   /* FOR PTB USE */
   base_transaction?: Transaction;
-  input_coin_argument?: Argument,
+  input_coin_argument?: Argument;
   return_output_coin_argument?: boolean;
 }
 
