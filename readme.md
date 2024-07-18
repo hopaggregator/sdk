@@ -43,7 +43,7 @@ const tx = await sdk.fetchTx({
   trade: quote.trade,
   sui_address: "0x123",
 
-  gas_budget: 1e9, // optional default is 1e9
+  gas_budget: 2e8, // optional default is 2e8
   max_slippage_bps: 100, // optional default is 1%
 
   return_output_coin_argument: false, // toggle to use the output coin in a ptb

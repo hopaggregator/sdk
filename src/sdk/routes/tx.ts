@@ -143,7 +143,7 @@ export async function fetchTx(
       user_input_coins,
       gas_coins,
 
-      gas_budget: params.gas_budget ?? 1e8,
+      gas_budget: params.gas_budget ?? 2e8,
       max_slippage_bps: params.max_slippage_bps,
 
       api_fee_wallet: client.options.fee_wallet,
@@ -184,6 +184,11 @@ export async function fetchTx(
       } else {
         throw new Error("Fees must be enabled for output coin to be returned!");
       }
+    }
+
+    if(params.gas_budget == undefined) {
+      // make gas budget dynmaic
+      tx_block.gas
     }
 
     return {

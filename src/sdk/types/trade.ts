@@ -44,6 +44,11 @@ const poolExtraSchema = z.union([
       is_v3: z.boolean(),
       fee_rate: z.number().nullish(),
     })
+  }),
+  z.object({
+    KRIYA: z.object({
+      is_v3: z.boolean()
+    })
   })
 ]);
 
