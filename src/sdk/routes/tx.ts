@@ -13,6 +13,8 @@ export interface GetTxParams {
   max_slippage_bps?: number;
 
   /* FOR PTB USE */
+  sponsored?: boolean;
+
   base_transaction?: Transaction;
   input_coin_argument?: Argument;
   return_output_coin_argument?: boolean;
@@ -79,48 +81,56 @@ export async function fetchTx(
   params: GetTxParams,
 ): Promise<GetTxResponse> {
   // get input coins
-  let user_input_coins: InputToken[] = await fetchCoins(
-    client,
-    params.sui_address,
-    params.trade.amount_in.token,
-  );
-  if (user_input_coins.length == 0) {
-    throw new Error(
-      `HopApi > Error: sui address ${params.sui_address} does not have any input coins for tx.`,
-    );
-  }
-  let total_input = user_input_coins.reduce((c, t) => c + BigInt(t.amount), 0n);
-  if(total_input < params.trade.amount_in.amount) {
-    throw new Error(
-      `HopApi > Error: user does not have enough amount in for trade. 
-      User amount: ${total_input}. 
-      Trade amount: ${params.trade.amount_in.amount}`
-    )
-  }
+  let gas_coins: CoinId[] = [];
+  let user_input_coins: InputToken[] = [];
 
-  // gas coins
-  let gas_coins: CoinId[];
-  if (params.trade.amount_in.token != "0x2::sui::SUI") {
-    let fetched_gas_coins = await fetchCoins(
+  if(!params.input_coin_argument) {
+     user_input_coins = await fetchCoins(
       client,
       params.sui_address,
-      "0x2::sui::SUI",
+      params.trade.amount_in.token,
     );
-    gas_coins = fetched_gas_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
-  } else {
-    gas_coins = user_input_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
+    if (user_input_coins.length == 0) {
+      throw new Error(
+        `HopApi > Error: sui address ${params.sui_address} does not have any input coins for tx.`,
+      );
+    }
+    let total_input = user_input_coins.reduce((c, t) => c + BigInt(t.amount), 0n);
+    if (total_input < params.trade.amount_in.amount) {
+      throw new Error(
+        `HopApi > Error: user does not have enough amount in for trade. 
+      User amount: ${total_input}. 
+      Trade amount: ${params.trade.amount_in.amount}`
+      )
+    }
+
+    // gas coins
+    if(!params.sponsored) {
+      if (params.trade.amount_in.token != "0x2::sui::SUI") {
+        let fetched_gas_coins = await fetchCoins(
+          client,
+          params.sui_address,
+          "0x2::sui::SUI",
+        );
+        gas_coins = fetched_gas_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
+      } else {
+        gas_coins = user_input_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
+      }
+    }
   }
 
   // add any input coins that match user type
-  let single_output_coin: InputToken[] = await fetchCoins(
-    client,
-    params.sui_address,
-    params.trade.amount_out.token,
-    1,
-  );
-  user_input_coins.push(...single_output_coin);
+  if(!params.input_coin_argument) {
+    let single_output_coin: InputToken[] = await fetchCoins(
+      client,
+      params.sui_address,
+      params.trade.amount_out.token,
+      1,
+    );
+    user_input_coins.push(...single_output_coin);
+  }
 
-  if (gas_coins.length === 0) {
+  if (!params.sponsored && gas_coins.length === 0) {
     throw new Error(
       `HopApi > Error: sui address ${params.sui_address} does not have any gas coins for tx.`,
     );
@@ -149,6 +159,7 @@ export async function fetchTx(
       api_fee_wallet: client.options.fee_wallet,
       api_fee_bps: client.options.fee_bps,
 
+      sponsored: params.sponsored,
       base_transaction,
       input_coin_argument,
       return_output_coin_argument: !!params.return_output_coin_argument,
@@ -184,11 +195,6 @@ export async function fetchTx(
       } else {
         throw new Error("Fees must be enabled for output coin to be returned!");
       }
-    }
-
-    if(params.gas_budget == undefined) {
-      // make gas budget dynmaic
-      tx_block.gas
     }
 
     return {
