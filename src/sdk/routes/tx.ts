@@ -4,6 +4,7 @@ import { HopApi } from "../api.js";
 import { makeAPIRequest } from "../util.js";
 import { compileRequestSchema, compileResponseSchema } from "../types/api.js";
 import { Trade } from "../types/trade.js";
+import { toB64 } from "@mysten/sui/utils";
 
 export interface GetTxParams {
   trade: Trade;
@@ -144,9 +145,10 @@ export async function fetchTx(
     // @ts-ignore
     { [params.input_coin_argument.$kind]: ensure_array(params.input_coin_argument[params.input_coin_argument.$kind]) } :
     undefined;
-  const base_transaction = await params.base_transaction?.getDigest({
-    client: client.client
-  });
+  let base_transaction = params.base_transaction ? toB64(await params.base_transaction?.build({
+    client: client.client,
+    onlyTransactionKind: true
+  })) : undefined;
 
   const compileRequest = compileRequestSchema.parse({
     trade: params.trade,
