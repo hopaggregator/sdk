@@ -144,7 +144,9 @@ export async function fetchTx(
     // @ts-ignore
     { [params.input_coin_argument.$kind]: ensure_array(params.input_coin_argument[params.input_coin_argument.$kind]) } :
     undefined;
-  const base_transaction = await params.base_transaction?.getDigest();
+  const base_transaction = await params.base_transaction?.getDigest({
+    client: client.client
+  });
 
   const compileRequest = compileRequestSchema.parse({
     trade: params.trade,
@@ -242,6 +244,6 @@ const createFrontendTxBlock = (serialized: string): Transaction => {
       ...txb.getData(),
       gasConfig: {},
       inputs: newInputs,
-    }),
+    })
   );
 };
