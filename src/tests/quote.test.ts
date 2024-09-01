@@ -5,7 +5,8 @@ import { getFullnodeUrl } from "@mysten/sui/client";
 async function quoteTest() {
   const api = new HopApi(getFullnodeUrl("mainnet"), {
     api_key: "hopapisKX7I30wPvo5YfN8Vx5P9r4cPh3nzVcS",
-    fee_bps: 0
+    fee_bps: 0,
+    hop_server_url: ""
   });
 
   const result = await api.fetchQuote({

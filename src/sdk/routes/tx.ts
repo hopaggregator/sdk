@@ -145,10 +145,16 @@ export async function fetchTx(
     // @ts-ignore
     { [params.input_coin_argument.$kind]: ensure_array(params.input_coin_argument[params.input_coin_argument.$kind]) } :
     undefined;
-  let base_transaction = params.base_transaction ? toB64(await params.base_transaction?.build({
-    client: client.client,
-    onlyTransactionKind: true
-  })) : undefined;
+  let base_transaction = undefined;
+
+  if(params.base_transaction) {
+    const built_tx_array = await params.base_transaction.build({
+      client: client.client,
+      onlyTransactionKind: true
+    });
+
+    base_transaction = toB64(built_tx_array);
+  }
 
   const compileRequest = compileRequestSchema.parse({
     trade: params.trade,
