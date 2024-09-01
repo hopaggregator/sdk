@@ -13,7 +13,7 @@ async function baseTest() {
   const api = new HopApi(getFullnodeUrl("mainnet"), {
     api_key: "hopapisKX7I30wPvo5YfN8Vx5P9r4cPh3nzVcS",
     fee_bps: 0,
-    hop_server_url: "http://localhost:3002/api/v2",
+    // hop_server_url: "http://localhost:3002/api/v2",
   });
 
   const tx = new Transaction();
@@ -58,7 +58,7 @@ async function baseTest() {
     sponsored: true,
     gas_budget: 1e8,
     base_transaction: tx,
-    input_coin_argument: coinIn.Result,
+    input_coin_argument: coinIn,
     // return_output_coin_argument: true,
     sui_address: normalizeSuiAddress(address),
   });

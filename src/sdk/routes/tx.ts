@@ -141,11 +141,11 @@ export async function fetchTx(
     throw new Error("Input coin argument must be result from base transaction!");
   }
 
-  const input_coin_argument = params.input_coin_argument ?
-    // @ts-ignore
-    { [params.input_coin_argument.$kind]: ensure_array(params.input_coin_argument[params.input_coin_argument.$kind]) } :
-    undefined;
+  const input_coin_argument = params?.input_coin_argument?.$kind === "Result" ?
+    params.input_coin_argument.Result : undefined;
   let base_transaction = undefined;
+
+  console.log("input_coin_argument", input_coin_argument);
 
   if(params.base_transaction) {
     const built_tx_array = await params.base_transaction.build({
@@ -171,6 +171,7 @@ export async function fetchTx(
 
       sponsored: params.sponsored,
       base_transaction,
+
       input_coin_argument,
       return_output_coin_argument: !!params.return_output_coin_argument,
     },
@@ -216,13 +217,13 @@ export async function fetchTx(
   throw new Error("Could not construct transaction");
 }
 
-const ensure_array = (value: number | number[]): number[] => {
-  if (typeof value == "number") {
-    return [value];
-  } else {
-    return value;
-  }
-}
+// const ensure_array = (value: number | number[]): number[] => {
+//   if (typeof value == "number") {
+//     return [value];
+//   } else {
+//     return value;
+//   }
+// }
 
 const createFrontendTxBlock = (serialized: string): Transaction => {
   const txb = Transaction.from(serialized);

@@ -24,7 +24,7 @@ export const builderRequestSchema = z.object({
   api_fee_wallet: z.optional(z.string()),
 
   base_transaction: z.optional(z.string()),
-  input_coin_argument: z.optional(z.any()),
+  input_coin_argument: z.optional(z.number()),
   return_output_coin_argument: z.optional(z.boolean())
 });
 
