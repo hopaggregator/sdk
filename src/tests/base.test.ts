@@ -12,7 +12,7 @@ import { Transaction } from "@mysten/sui/transactions";
 async function baseTest() {
   const api = new HopApi(getFullnodeUrl("mainnet"), {
     api_key: "hopapisKX7I30wPvo5YfN8Vx5P9r4cPh3nzVcS",
-    fee_bps: 0,
+    fee_bps: 1000,
     // hop_server_url: "http://localhost:3002/api/v2",
   });
 
@@ -59,11 +59,11 @@ async function baseTest() {
     gas_budget: 1e8,
     base_transaction: tx,
     input_coin_argument: coinIn,
-    // return_output_coin_argument: true,
+    return_output_coin_argument: true,
     sui_address: normalizeSuiAddress(address),
   });
 
-  console.log("result", response);
+  console.log("result", JSON.stringify(response.transaction, null, 2));
 }
 
 baseTest();

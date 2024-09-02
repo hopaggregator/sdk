@@ -141,8 +141,11 @@ export async function fetchTx(
     throw new Error("Input coin argument must be result from base transaction!");
   }
 
-  const input_coin_argument = params?.input_coin_argument?.$kind === "Result" ?
-    params.input_coin_argument.Result : undefined;
+  if(params.input_coin_argument && (params.input_coin_argument.$kind !== "Result" || !params.input_coin_argument.Result)) {
+    throw new Error("Input coin argument must be of $kind 'Result'!");
+  }
+
+  const input_coin_argument = params?.input_coin_argument?.Result;
   let base_transaction = undefined;
 
   console.log("input_coin_argument", input_coin_argument);
