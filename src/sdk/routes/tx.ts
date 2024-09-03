@@ -207,7 +207,7 @@ export async function fetchTx(
               tx.$kind == "MoveCall" &&
               tx.MoveCall.function === "check_slippage_v2" &&
               tx.MoveCall.module === "slippage",
-          ).MoveCall.arguments[0];
+          )?.MoveCall.arguments[0];
       } else {
         throw new Error("Fees must be enabled for output coin to be returned!");
       }
