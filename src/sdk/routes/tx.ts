@@ -1,8 +1,4 @@
-import {
-  Transaction,
-  Argument,
-  TransactionResult,
-} from "@mysten/sui/transactions";
+import { Transaction, Argument, TransactionResult } from "@mysten/sui/transactions";
 import { CoinStruct } from "@mysten/sui/client";
 import { HopApi } from "../api.js";
 import { makeAPIRequest } from "../util.js";
@@ -89,8 +85,8 @@ export async function fetchTx(
   let gas_coins: CoinId[] = [];
   let user_input_coins: InputToken[] = [];
 
-  if (!params.input_coin_argument) {
-    user_input_coins = await fetchCoins(
+  if(!params.input_coin_argument) {
+     user_input_coins = await fetchCoins(
       client,
       params.sui_address,
       params.trade.amount_in.token,
@@ -100,39 +96,32 @@ export async function fetchTx(
         `HopApi > Error: sui address ${params.sui_address} does not have any input coins for tx.`,
       );
     }
-    let total_input = user_input_coins.reduce(
-      (c, t) => c + BigInt(t.amount),
-      0n,
-    );
+    let total_input = user_input_coins.reduce((c, t) => c + BigInt(t.amount), 0n);
     if (total_input < params.trade.amount_in.amount) {
       throw new Error(
         `HopApi > Error: user does not have enough amount in for trade. 
       User amount: ${total_input}. 
-      Trade amount: ${params.trade.amount_in.amount}`,
-      );
+      Trade amount: ${params.trade.amount_in.amount}`
+      )
     }
 
     // gas coins
-    if (!params.sponsored) {
+    if(!params.sponsored) {
       if (params.trade.amount_in.token != "0x2::sui::SUI") {
         let fetched_gas_coins = await fetchCoins(
           client,
           params.sui_address,
           "0x2::sui::SUI",
         );
-        gas_coins = fetched_gas_coins
-          .filter((struct) => struct.amount != "0")
-          .map((struct) => struct.object_id);
+        gas_coins = fetched_gas_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
       } else {
-        gas_coins = user_input_coins
-          .filter((struct) => struct.amount != "0")
-          .map((struct) => struct.object_id);
+        gas_coins = user_input_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
       }
     }
   }
 
   // add any input coins that match user type
-  if (!params.input_coin_argument) {
+  if(!params.input_coin_argument) {
     let single_output_coin: InputToken[] = await fetchCoins(
       client,
       params.sui_address,
@@ -148,27 +137,21 @@ export async function fetchTx(
     );
   }
 
-  if (params.input_coin_argument && !params.base_transaction) {
-    throw new Error(
-      "Input coin argument must be result from base transaction!",
-    );
+  if(params.input_coin_argument && !params.base_transaction) {
+    throw new Error("Input coin argument must be result from base transaction!");
   }
 
-  if (
-    params.input_coin_argument &&
-    (params.input_coin_argument.$kind !== "Result" ||
-      !params.input_coin_argument.Result)
-  ) {
+  if(params.input_coin_argument && (params.input_coin_argument.$kind !== "Result" || !params.input_coin_argument.Result)) {
     throw new Error("Input coin argument must b rundeve of $kind 'Result'!");
   }
 
   const input_coin_argument = params?.input_coin_argument?.Result;
   let base_transaction = undefined;
 
-  if (params.base_transaction) {
+  if(params.base_transaction) {
     const built_tx_array = await params.base_transaction.build({
       client: client.client,
-      onlyTransactionKind: true,
+      onlyTransactionKind: true
     });
 
     base_transaction = toB64(built_tx_array);
@@ -210,12 +193,12 @@ export async function fetchTx(
     const tx_block = createFrontendTxBlock(response.tx);
     let output_coin: TransactionResult | undefined = undefined;
 
-    if (params.return_output_coin_argument) {
+    if(params.return_output_coin_argument) {
       // order
       // last merge into final output coin
       // slippage check
       // fee
-      if (client.options.fee_wallet != undefined) {
+      if(client.options.fee_wallet != undefined) {
         // @ts-ignore
         output_coin = tx_block
           .getData()
@@ -264,8 +247,8 @@ const createFrontendTxBlock = (serialized: string): Transaction => {
         $kind: "UnresolvedObject",
         UnresolvedObject: {
           objectId,
-        },
-      };
+        }
+      }
     }
     return input;
   });
@@ -275,6 +258,6 @@ const createFrontendTxBlock = (serialized: string): Transaction => {
       ...txb.getData(),
       gasConfig: {},
       inputs: newInputs,
-    }),
+    })
   );
 };
