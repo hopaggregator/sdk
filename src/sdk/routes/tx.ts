@@ -148,8 +148,6 @@ export async function fetchTx(
   const input_coin_argument = params?.input_coin_argument?.Result;
   let base_transaction = undefined;
 
-  console.log("input_coin_argument", input_coin_argument);
-
   if(params.base_transaction) {
     const built_tx_array = await params.base_transaction.build({
       client: client.client,
@@ -202,10 +200,14 @@ export async function fetchTx(
       // fee
       if(client.options.fee_wallet != undefined) {
         // @ts-ignore
-        output_coin = tx_block.getData().commands.find((tx) => {
-          return tx.$kind == 'MoveCall' && tx.MoveCall.function === 'check_slippage_v2' && tx.MoveCall.module === 'slippage';
-          // @ts-ignore
-        })?.arguments[0];
+        output_coin = tx_block
+          .getData()
+          .commands.find(
+            (tx) =>
+              tx.$kind == "MoveCall" &&
+              tx.MoveCall.function === "check_slippage_v2" &&
+              tx.MoveCall.module === "slippage",
+          )?.MoveCall.arguments[0];
       } else {
         throw new Error("Fees must be enabled for output coin to be returned!");
       }
