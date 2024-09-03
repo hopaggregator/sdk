@@ -142,7 +142,7 @@ export async function fetchTx(
   }
 
   if(params.input_coin_argument && (params.input_coin_argument.$kind !== "Result" || !params.input_coin_argument.Result)) {
-    throw new Error("Input coin argument must be of $kind 'Result'!");
+    throw new Error("Input coin argument must b rundeve of $kind 'Result'!");
   }
 
   const input_coin_argument = params?.input_coin_argument?.Result;
@@ -202,8 +202,8 @@ export async function fetchTx(
       // fee
       if(client.options.fee_wallet != undefined) {
         // @ts-ignore
-        output_coin = tx_block.blockData.transactions.find((tx) => {
-          return tx.kind == 'MoveCall' && tx.target.endsWith('slippage::check_slippage_v2');
+        output_coin = tx_block.getData().commands.find((tx) => {
+          return tx.$kind == 'MoveCall' && tx.MoveCall.function === 'check_slippage_v2' && tx.MoveCall.module === 'slippage';
           // @ts-ignore
         })?.arguments[0];
       } else {
