@@ -62,3 +62,9 @@ export const tokensResponseSchema = z.object({
     token_order: z.nullable(z.number())
   }))
 })
+
+export const priceResponseSchema = z.object({
+  coin_type: z.string(),
+  price_sui: z.number(),
+  sui_price: z.number()
+});

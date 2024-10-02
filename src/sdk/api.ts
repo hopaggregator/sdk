@@ -6,6 +6,7 @@ import {
 } from "./routes/quote.js";
 import { fetchTx, GetTxParams, GetTxResponse } from "./routes/tx.js";
 import { fetchTokens, GetTokensResponse } from "./routes/tokens.js";
+import { fetchPrice, GetPriceParams, GetPriceResponse } from "./routes/price.js";
 
 export interface HopApiOptions {
   api_key: string;
@@ -67,4 +68,9 @@ export class HopApi {
   async fetchTokens(): Promise<GetTokensResponse> {
     return fetchTokens(this);
   }
+  
+  async fetchPrice(price: GetPriceParams): Promise<GetPriceResponse> {
+    return fetchPrice(this, price);
+  }
+  
 }
