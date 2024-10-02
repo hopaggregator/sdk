@@ -10,7 +10,7 @@ async function priceTest() {
   });
 
   const result = await api.fetchPrice({
-    coin_type: "0x06b145d0322e389d6225f336ab57bba4c67e4e701bd6c6bc959d90675900a17e::meow::MEOW"
+    coin_type: "0x1c6cd615ed4c42a34977212a3407a28eec21acc572c8dbe7d0382bf0289a2590::plop::PLOP"
   });
 
   console.log("result", result);
