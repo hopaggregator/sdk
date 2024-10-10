@@ -104,19 +104,19 @@ export async function fetchTx(
       Trade amount: ${params.trade.amount_in.amount}`
       )
     }
+  }
 
-    // gas coins
-    if(!params.sponsored) {
-      if (params.trade.amount_in.token != "0x2::sui::SUI") {
-        let fetched_gas_coins = await fetchCoins(
-          client,
-          params.sui_address,
-          "0x2::sui::SUI",
-        );
-        gas_coins = fetched_gas_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
-      } else {
-        gas_coins = user_input_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
-      }
+  // gas coins
+  if(!params.sponsored) {
+    if (params.trade.amount_in.token != "0x2::sui::SUI") {
+      let fetched_gas_coins = await fetchCoins(
+        client,
+        params.sui_address,
+        "0x2::sui::SUI",
+      );
+      gas_coins = fetched_gas_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
+    } else {
+      gas_coins = user_input_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
     }
   }
 
