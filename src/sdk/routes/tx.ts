@@ -108,15 +108,15 @@ export async function fetchTx(
 
   // gas coins
   if(!params.sponsored) {
-    if (normalizeStructTag(params.trade.amount_in.token) != normalizeStructTag("0x2::sui::SUI")) {
+    if (normalizeStructTag(params.trade.amount_in.token) != normalizeStructTag("0x2::sui::SUI") || user_input_coins.length == 0) {
       let fetched_gas_coins = await fetchCoins(
         client,
         params.sui_address,
         "0x2::sui::SUI",
       );
-      gas_coins = fetched_gas_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
+      gas_coins = fetched_gas_coins.filter((struct) => Number(struct.amount) > 0).map((struct) => struct.object_id);
     } else {
-      gas_coins = user_input_coins.filter((struct) => struct.amount != "0").map((struct) => struct.object_id);
+      gas_coins = user_input_coins.filter((struct) => Number(struct.amount) > 0).map((struct) => struct.object_id);
     }
   }
 
