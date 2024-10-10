@@ -4,7 +4,7 @@ import { HopApi } from "../api.js";
 import { makeAPIRequest } from "../util.js";
 import { compileRequestSchema, compileResponseSchema } from "../types/api.js";
 import { Trade } from "../types/trade.js";
-import { toB64 } from "@mysten/sui/utils";
+import { normalizeStructTag, toB64 } from "@mysten/sui/utils";
 
 export interface GetTxParams {
   trade: Trade;
@@ -108,7 +108,7 @@ export async function fetchTx(
 
   // gas coins
   if(!params.sponsored) {
-    if (params.trade.amount_in.token != "0x2::sui::SUI") {
+    if (normalizeStructTag(params.trade.amount_in.token) != normalizeStructTag("0x2::sui::SUI")) {
       let fetched_gas_coins = await fetchCoins(
         client,
         params.sui_address,
