@@ -141,11 +141,22 @@ export async function fetchTx(
     throw new Error("Input coin argument must be result from base transaction!");
   }
 
-  if(params.input_coin_argument && (params.input_coin_argument.$kind !== "Result" || !params.input_coin_argument.Result)) {
-    throw new Error("Input coin argument must b rundeve of $kind 'Result'!");
+  let input_coin_argument = undefined;
+
+  // @ts-expect-error
+  if(params.input_coin_argument?.$kind === "Result" || params.input_coin_argument?.Result) {
+    // @ts-expect-error
+    input_coin_argument = params?.input_coin_argument?.Result;
+    // @ts-expect-error
+  } else if(params.input_coin_argument?.$kind === "NestedResult" || params.input_coin_argument?.NestedResult) {
+    // @ts-expect-error
+    input_coin_argument = params?.input_coin_argument?.NestedResult[0];
+    // @ts-expect-error
+  } else if(params.input_coin_argument?.$kind === "Input" || params.input_coin_argument?.Input) {
+    // @ts-expect-error
+    input_coin_argument = params?.input_coin_argument?.Input;
   }
 
-  const input_coin_argument = params?.input_coin_argument?.Result;
   let base_transaction = undefined;
 
   if(params.base_transaction) {
