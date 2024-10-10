@@ -146,8 +146,11 @@ export async function fetchTx(
 
   // @ts-expect-error
   if(params.input_coin_argument?.$kind === "Result" || params.input_coin_argument?.Result) {
+    // @ts-expect-error
     input_coin_argument = params?.input_coin_argument?.Result;
+    // @ts-expect-error
   } else if(params.input_coin_argument?.$kind === "NestedResult" || params.input_coin_argument?.NestedResult) {
+    // @ts-expect-error
     input_coin_argument_nested = params?.input_coin_argument?.NestedResult;
   }
 
