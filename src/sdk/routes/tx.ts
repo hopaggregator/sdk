@@ -142,19 +142,13 @@ export async function fetchTx(
   }
 
   let input_coin_argument = undefined;
+  let input_coin_argument_nested = undefined;
 
   // @ts-expect-error
   if(params.input_coin_argument?.$kind === "Result" || params.input_coin_argument?.Result) {
-    // @ts-expect-error
     input_coin_argument = params?.input_coin_argument?.Result;
-    // @ts-expect-error
   } else if(params.input_coin_argument?.$kind === "NestedResult" || params.input_coin_argument?.NestedResult) {
-    // @ts-expect-error
-    input_coin_argument = params?.input_coin_argument?.NestedResult[0];
-    // @ts-expect-error
-  } else if(params.input_coin_argument?.$kind === "Input" || params.input_coin_argument?.Input) {
-    // @ts-expect-error
-    input_coin_argument = params?.input_coin_argument?.Input;
+    input_coin_argument_nested = params?.input_coin_argument?.NestedResult;
   }
 
   let base_transaction = undefined;
@@ -185,6 +179,7 @@ export async function fetchTx(
       base_transaction,
 
       input_coin_argument,
+      input_coin_argument_nested,
       return_output_coin_argument: !!params.return_output_coin_argument,
     },
   });
