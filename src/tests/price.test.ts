@@ -4,7 +4,7 @@ import { getFullnodeUrl } from "@mysten/sui/client";
 // @ts-ignore
 async function priceTest() {
   const api = new HopApi(getFullnodeUrl("mainnet"), {
-    api_key: "hopapisKX7I30wPvo5YfN8Vx5P9r4cPh3nzVcS",
+    api_key: "",
     fee_bps: 0,
     // hop_server_url: "http://localhost:3002/api/v2"
   });

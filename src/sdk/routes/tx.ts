@@ -154,9 +154,6 @@ export async function fetchTx(
     input_coin_argument_nested = params?.input_coin_argument?.NestedResult;
   }
 
-  console.log("params.input_coin_argument", params.input_coin_argument);
-  console.log("input_coin_argument_nested", input_coin_argument_nested);
-
   let base_transaction = undefined;
 
   if(params.base_transaction) {
@@ -189,7 +186,6 @@ export async function fetchTx(
       return_output_coin_argument: !!params.return_output_coin_argument,
     },
   });
-  console.log("parsed request!");
 
   const response = await makeAPIRequest({
     route: "tx/compile",
@@ -201,7 +197,6 @@ export async function fetchTx(
     },
     responseSchema: compileResponseSchema,
   });
-  console.log("made request!");
 
   if (response.tx) {
     const tx_block = createFrontendTxBlock(response.tx);
@@ -212,19 +207,15 @@ export async function fetchTx(
       // last merge into final output coin
       // slippage check
       // fee
-      if(client.options.fee_wallet != undefined) {
-        // @ts-ignore
-        output_coin = tx_block
-          .getData()
-          .commands.find(
-            (tx) =>
-              tx.$kind == "MoveCall" &&
-              tx.MoveCall.function === "check_slippage_v2" &&
-              tx.MoveCall.module === "slippage",
-          )?.MoveCall.arguments[0];
-      } else {
-        throw new Error("Fees must be enabled for output coin to be returned!");
-      }
+      // @ts-ignore
+      output_coin = tx_block
+        .getData()
+        .commands.find(
+          (tx) =>
+            tx.$kind == "MoveCall" &&
+            tx.MoveCall.function === "check_slippage_v2" &&
+            tx.MoveCall.module === "slippage",
+        )?.MoveCall.arguments[0];
     }
 
     return {
