@@ -25,6 +25,7 @@ export const builderRequestSchema = z.object({
 
   base_transaction: z.optional(z.string()),
   input_coin_argument: z.optional(z.number()),
+  input_coin_argument_nested: z.optional(z.array(z.number()).length(2)),
   return_output_coin_argument: z.optional(z.boolean())
 });
 

@@ -154,6 +154,9 @@ export async function fetchTx(
     input_coin_argument_nested = params?.input_coin_argument?.NestedResult;
   }
 
+  console.log("params.input_coin_argument", params.input_coin_argument);
+  console.log("input_coin_argument_nested", input_coin_argument_nested);
+
   let base_transaction = undefined;
 
   if(params.base_transaction) {
@@ -186,6 +189,7 @@ export async function fetchTx(
       return_output_coin_argument: !!params.return_output_coin_argument,
     },
   });
+  console.log("parsed request!");
 
   const response = await makeAPIRequest({
     route: "tx/compile",
@@ -197,6 +201,7 @@ export async function fetchTx(
     },
     responseSchema: compileResponseSchema,
   });
+  console.log("made request!");
 
   if (response.tx) {
     const tx_block = createFrontendTxBlock(response.tx);
