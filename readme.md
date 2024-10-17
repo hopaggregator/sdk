@@ -13,8 +13,13 @@ import { getFullnodeUrl } from "@mysten/sui/client";
 const rpc_url = getFullNodeUrl("mainnet");
 const hop_api_options: HopApiOptions = {
   api_key: "",
+  
+  // 1bps = 0.01%. 10_000bps = 100%.
   fee_bps: 0,
   fee_wallet: "YOUR_SUI_ADDRESS_HERE",
+  
+  // option to charge fees in sui when possible
+  // instead of only the output token
   charge_fees_in_sui: true,
 };
 
