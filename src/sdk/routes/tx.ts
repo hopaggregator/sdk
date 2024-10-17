@@ -89,7 +89,7 @@ export async function fetchTx(
      user_input_coins = await fetchCoins(
       client,
       params.sui_address,
-      params.trade.amount_in.token,
+      params.trade.amount_in.token
     );
     if (user_input_coins.length == 0) {
       throw new Error(
@@ -113,6 +113,7 @@ export async function fetchTx(
         client,
         params.sui_address,
         "0x2::sui::SUI",
+        60
       );
       gas_coins = fetched_gas_coins.filter((struct) => Number(struct.amount) > 0).map((struct) => struct.object_id);
     } else {
@@ -143,6 +144,7 @@ export async function fetchTx(
 
   let input_coin_argument = undefined;
   let input_coin_argument_nested = undefined;
+  let input_coin_argument_input = undefined;
 
   // @ts-expect-error
   if(params.input_coin_argument?.$kind === "Result" || params.input_coin_argument?.Result) {
@@ -152,6 +154,10 @@ export async function fetchTx(
   } else if(params.input_coin_argument?.$kind === "NestedResult" || params.input_coin_argument?.NestedResult) {
     // @ts-expect-error
     input_coin_argument_nested = params?.input_coin_argument?.NestedResult;
+    // @ts-expect-error
+  } else if(params.input_coin_argument?.$kind === "Input" || params.input_coin_argument?.Input) {
+    // @ts-expect-error
+    input_coin_argument_input = params?.input_coin_argument?.Input;
   }
 
   let base_transaction = undefined;
@@ -172,17 +178,20 @@ export async function fetchTx(
       user_input_coins,
       gas_coins,
 
-      gas_budget: params.gas_budget ?? 2e8,
+      gas_budget: params.gas_budget ?? 0.03e9,
       max_slippage_bps: params.max_slippage_bps,
 
       api_fee_wallet: client.options.fee_wallet,
       api_fee_bps: client.options.fee_bps,
+      charge_fees_in_sui: client.options.charge_fees_in_sui,
 
       sponsored: params.sponsored,
       base_transaction,
 
       input_coin_argument,
       input_coin_argument_nested,
+      input_coin_argument_input,
+
       return_output_coin_argument: !!params.return_output_coin_argument,
     },
   });

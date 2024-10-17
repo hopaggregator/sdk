@@ -11,18 +11,20 @@ export enum SuiExchange {
   SUISWAP = "SUISWAP",
 }
 
-const poolExtraSchema = z.union([
+const suiExchangeSchema = z.nativeEnum(SuiExchange).or(z.string());
+
+export const poolExtraSchema = z.union([
   z.object({
     AFTERMATH: z.object({
       lp_coin_type: z.string(),
-    }),
+    }).passthrough(),
   }),
   z.object({
     DEEPBOOK: z.object({
       pool_type: z.string(),
       lot_size: z.coerce.bigint(),
       min_size: z.coerce.bigint()
-    }),
+    }).passthrough(),
   }),
   z.object({
     TURBOS: z.object({
@@ -31,25 +33,26 @@ const poolExtraSchema = z.union([
       fee_type: z.string(),
       tick_spacing: z.number(),
       tick_current_index: z.number(),
-    }),
+    }).passthrough(),
   }),
   z.object({
     CETUS: z.object({
       coin_type_a: z.string(),
       coin_type_b: z.string(),
-    }),
+    }).passthrough(),
   }),
   z.object({
     FLOWX: z.object({
       is_v3: z.boolean(),
       fee_rate: z.number().nullish(),
-    })
+    }).passthrough()
   }),
   z.object({
     KRIYA: z.object({
       is_v3: z.boolean()
-    })
-  })
+    }).passthrough()
+  }),
+  z.object({}).passthrough()
 ]);
 
 export type PoolExtra = z.infer<typeof poolExtraSchema>;
@@ -57,11 +60,11 @@ export type PoolExtra = z.infer<typeof poolExtraSchema>;
 const tradePoolSchema = z.object({
   object_id: z.string(),
   initial_shared_version: z.number().nullable(),
-  sui_exchange: z.nativeEnum(SuiExchange),
+  sui_exchange: suiExchangeSchema,
   tokens: z.array(z.string()).nonempty(),
   is_active: z.boolean(),
   extra: poolExtraSchema.nullable(),
-});
+}).passthrough();
 
 export type TradePool = z.infer<typeof tradePoolSchema>;
 
@@ -84,6 +87,6 @@ export const tradeSchema = z.object({
   edges: z.record(z.array(z.string())),
   amount_in: tokenAmountSchema,
   amount_out: tokenAmountSchema,
-});
+}).passthrough();
 
 export type Trade = z.infer<typeof tradeSchema>;

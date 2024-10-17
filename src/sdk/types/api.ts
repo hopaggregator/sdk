@@ -16,24 +16,31 @@ export const builderRequestSchema = z.object({
       amount: z.string(),
     }),
   ),
+  
   sponsored: z.optional(z.boolean()),
   gas_coins: z.array(coinIdSchema),
+  
   gas_budget: z.number(),
+  
   max_slippage_bps: z.optional(z.number()),
+  
   api_fee_bps: z.optional(z.number()),
   api_fee_wallet: z.optional(z.string()),
+  charge_fees_in_sui: z.optional(z.boolean()),
 
   base_transaction: z.optional(z.string()),
   input_coin_argument: z.optional(z.number()),
   input_coin_argument_nested: z.optional(z.array(z.number()).length(2)),
+  input_coin_argument_input: z.optional(z.number()),
+  
   return_output_coin_argument: z.optional(z.boolean())
-});
+}).passthrough();
 
 export type BuilderRequest = z.infer<typeof builderRequestSchema>;
 
 export const compileRequestSchema = z.object({
-  trade: tradeSchema,
-  builder_request: builderRequestSchema,
+  trade: tradeSchema.passthrough(),
+  builder_request: builderRequestSchema.passthrough(),
 });
 
 export type CompileRequest = z.infer<typeof compileRequestSchema>;
@@ -41,8 +48,8 @@ export type CompileRequest = z.infer<typeof compileRequestSchema>;
 export const swapAPIResponseSchema = z.object({
   total_tests: z.number(),
   errors: z.number(),
-  trade: tradeSchema.nullable(),
-});
+  trade: tradeSchema.passthrough().nullable(),
+}).passthrough();
 
 export type SwapAPIResponse = z.infer<typeof swapAPIResponseSchema>;
 
@@ -61,11 +68,11 @@ export const tokensResponseSchema = z.object({
     icon_url: z.string(),
     decimals: z.number(),
     token_order: z.nullable(z.number())
-  }))
-})
+  }).passthrough())
+}).passthrough();
 
 export const priceResponseSchema = z.object({
   coin_type: z.string(),
   price_sui: z.number(),
   sui_price: z.number()
-});
+}).passthrough();

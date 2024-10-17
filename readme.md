@@ -14,13 +14,14 @@ const rpc_url = getFullNodeUrl("mainnet");
 const hop_api_options: HopApiOptions = {
   api_key: "",
   fee_bps: 0,
-  fee_wallet: "0x2",
+  fee_wallet: "YOUR_SUI_ADDRESS_HERE",
+  charge_fees_in_sui: true,
 };
 
 const sdk = new HopApi(rpc_url, hop_api_options);
 ```
 
-To use the Hop Aggregator API, please create an api key [here](https://hop.ag) first.
+To use the Hop Aggregator API, please create an api key [here](https://t.me/HopAggregator) first.
 
 #### Get a Swap Quote
 
@@ -41,9 +42,9 @@ Call this when a user clicks trade and wants to execute a transaction.
 ```typescript
 const tx = await sdk.fetchTx({
   trade: quote.trade,
-  sui_address: "0x123",
+  sui_address: "VALID_SUI_ADDRESS_HERE",
 
-  gas_budget: 2e8, // optional default is 2e8
+  gas_budget: 0.03e9, // optional default is 0.03 SUI
   max_slippage_bps: 100, // optional default is 1%
 
   return_output_coin_argument: false, // toggle to use the output coin in a ptb
@@ -57,6 +58,10 @@ endpoint returns a curated list - with ordering - for your application.
 ```typescript
 const tokens = await sdk.fetchTokens();
 ```
+
+#### Automatic Updates
+As soon as new liquidity sources become available, your
+SDK will automatically aggregate them, without anything required on your end.
 
 #### Attribution
 

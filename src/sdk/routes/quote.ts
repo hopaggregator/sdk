@@ -1,7 +1,7 @@
 import { HopApi } from "../api.js";
 import { swapAPIResponseSchema } from "../types/api.js";
 import { Trade } from "../types/trade.js";
-import { getAmountOutWithCommission, makeAPIRequest } from "../util.js";
+import { getAmountOutWithCommission, isSuiType, makeAPIRequest } from "../util.js";
 
 export interface GetQuoteParams {
   token_in: string;
@@ -28,6 +28,9 @@ export async function fetchQuote(
         token_out: params.token_out,
         amount_in: params.amount_in.toString(),
         use_alpha_router: client.use_v2,
+
+        api_fee_bps: client.options.fee_bps,
+        charge_fees_in_sui: client.options.charge_fees_in_sui,
       },
       method: "post",
     },
@@ -35,11 +38,20 @@ export async function fetchQuote(
   });
 
   if (response?.trade) {
-    return {
-      amount_out_with_fee: getAmountOutWithCommission(
+    let amount_out_with_fee;
+
+    if(client.options.charge_fees_in_sui && isSuiType(params.token_in)) {
+      // fee already charged
+      amount_out_with_fee = response.trade.amount_out.amount;
+    } else {
+      amount_out_with_fee = getAmountOutWithCommission(
         response.trade.amount_out.amount,
-        client.options.fee_bps,
-      ),
+        client.options.fee_bps
+      );
+    }
+
+    return {
+      amount_out_with_fee,
       trade: response.trade,
     };
   }

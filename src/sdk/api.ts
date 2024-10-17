@@ -11,6 +11,8 @@ import { fetchPrice, GetPriceParams, GetPriceResponse } from "./routes/price.js"
 export interface HopApiOptions {
   api_key: string;
   fee_bps: number; // fee to charge in bps (50% split with Hop / max fee of 5%)
+  charge_fees_in_sui?: boolean,
+
   fee_wallet?: string; // sui address
   hop_server_url?: string;
 }

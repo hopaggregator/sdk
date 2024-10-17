@@ -1,6 +1,7 @@
 import fetch from "cross-fetch";
 import { z } from "zod";
 import { API_SERVER_PREFIX, FEE_DENOMINATOR } from "./constants.js";
+import { normalizeStructTag } from "@mysten/sui/utils";
 
 export interface RequestParams {
   hop_server_url?: string;
@@ -26,7 +27,7 @@ export async function makeAPIRequest<O>({
         body: JSON.stringify(
           {
             ...options.data,
-            api_key: options.api_key,
+            api_key: options.api_key
           },
           (_, v) => {
             const isBigIntString = typeof v === 'string' && /^\d+n$/.test(v);
@@ -72,4 +73,10 @@ export function getAmountOutWithCommission(
   return (
     (amount_out * (FEE_DENOMINATOR - BigInt(fee_bps))) / BigInt(FEE_DENOMINATOR)
   );
+}
+
+const NORMALIZED_SUI_COIN_TYPE = normalizeStructTag("0x2::sui::SUI");
+
+export function isSuiType(coin_type: string) {
+  return NORMALIZED_SUI_COIN_TYPE == normalizeStructTag(coin_type);
 }

@@ -13,7 +13,6 @@ export interface GetPriceResponse {
   price_usd: number; // returns usd per token
 
   sui_price: number; // returns usdc per token
-
 }
 
 export async function fetchPrice(
