@@ -9,6 +9,7 @@ export enum SuiExchange {
   BLUEMOVE = "BLUEMOVE",
   DEEPBOOK = "DEEPBOOK",
   SUISWAP = "SUISWAP",
+  HOPFUN = "HOPFUN"
 }
 
 const suiExchangeSchema = z.nativeEnum(SuiExchange).or(z.string());
