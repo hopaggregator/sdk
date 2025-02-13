@@ -19,7 +19,11 @@ export async function fetchPrice(
   client: HopApi,
   params: GetPriceParams
 ): Promise<GetPriceResponse> {
-  const response = await makeAPIRequest({
+  const response = await makeAPIRequest<{
+    coin_type: string,
+    price_sui: number,
+    sui_price: number,
+  }>({
     route: `price`,
     options: {
       api_key: client.options.api_key,
@@ -37,9 +41,9 @@ export async function fetchPrice(
 
     return {
       coin_type: response?.coin_type,
-      price_sui: response?.price_sui,
-      price_usd,
-      sui_price: response?.sui_price
+      price_sui: response?.price_sui, // price of token in sui
+      price_usd, // price of token in usd
+      sui_price: response?.sui_price // price of sui in usd
     };
   }
 

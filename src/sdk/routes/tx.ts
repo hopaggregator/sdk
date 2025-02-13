@@ -183,7 +183,7 @@ export async function fetchTx(
 
       api_fee_wallet: client.options.fee_wallet,
       api_fee_bps: client.options.fee_bps,
-      charge_fees_in_sui: client.options.charge_fees_in_sui,
+      charge_fees_in_sui: true,
 
       sponsored: params.sponsored,
       base_transaction,

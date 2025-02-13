@@ -10,7 +10,11 @@ export enum SuiExchange {
   DEEPBOOK = "DEEPBOOK",
   SUISWAP = "SUISWAP",
   HOPFUN = "HOPFUN",
-  BLUEFIN = "BLUEFIN"
+  BLUEFIN = "BLUEFIN",
+  MOVEPUMP = "MOVEPUMP",
+  TURBOSFUN = "TURBOSFUN",
+  SPRINGSUI = "SPRINGSUI",
+  STSUI = "STSUI",
 }
 
 const suiExchangeSchema = z.nativeEnum(SuiExchange).or(z.string());
@@ -53,6 +57,12 @@ export const poolExtraSchema = z.union([
     KRIYA: z.object({
       is_v3: z.boolean()
     }).passthrough()
+  }),
+  z.object({
+    SPRINGSUI: z.object({
+      weighthook_id: z.string(),
+      weighthook_version: z.number()
+    })
   }),
   z.object({}).passthrough()
 ]);
