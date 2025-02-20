@@ -15,6 +15,7 @@ export enum SuiExchange {
   TURBOSFUN = "TURBOSFUN",
   SPRINGSUI = "SPRINGSUI",
   STSUI = "STSUI",
+  OBRIC = "OBRIC"
 }
 
 const suiExchangeSchema = z.nativeEnum(SuiExchange).or(z.string());
