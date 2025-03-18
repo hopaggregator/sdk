@@ -89,6 +89,8 @@ const routeNodeSchema = z.object({
   amount_out: z.bigint()
 });
 
+export type RouteNode = z.infer<typeof routeNodeSchema>;
+
 export const gammaTradeSchema = z.object({
   pools: z.map(z.string(), tradePoolSchema),
   routes: z.array(z.array(routeNodeSchema)),
