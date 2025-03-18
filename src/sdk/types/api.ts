@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { tradeSchema } from "./trade.js";
+import { gammaTradeSchema } from "./trade.js";
 
 const coinIdSchema = z.object({
   object_id: z.string(),
@@ -39,7 +39,7 @@ export const builderRequestSchema = z.object({
 export type BuilderRequest = z.infer<typeof builderRequestSchema>;
 
 export const compileRequestSchema = z.object({
-  trade: tradeSchema.passthrough(),
+  trade: gammaTradeSchema.passthrough(),
   builder_request: builderRequestSchema.passthrough(),
 });
 
@@ -48,7 +48,7 @@ export type CompileRequest = z.infer<typeof compileRequestSchema>;
 export const swapAPIResponseSchema = z.object({
   total_tests: z.number(),
   errors: z.number(),
-  trade: tradeSchema.passthrough().nullable(),
+  trade: gammaTradeSchema.passthrough().nullable(),
 }).passthrough();
 
 export type SwapAPIResponse = z.infer<typeof swapAPIResponseSchema>;

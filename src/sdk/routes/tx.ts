@@ -3,11 +3,11 @@ import { CoinStruct } from "@mysten/sui/client";
 import { HopApi } from "../api.js";
 import { makeAPIRequest } from "../util.js";
 import { compileRequestSchema, compileResponseSchema } from "../types/api.js";
-import { Trade } from "../types/trade.js";
+import { GammaTrade } from "../types/trade.js";
 import { normalizeStructTag, toB64 } from "@mysten/sui/utils";
 
 export interface GetTxParams {
-  trade: Trade;
+  trade: GammaTrade;
   sui_address: string;
 
   gas_budget?: number;
@@ -84,12 +84,13 @@ export async function fetchTx(
   // get input coins
   let gas_coins: CoinId[] = [];
   let user_input_coins: InputToken[] = [];
+  let coin_in = params.trade.routes[0]![0]!.coin_in;
 
   if(!params.input_coin_argument) {
      user_input_coins = await fetchCoins(
       client,
       params.sui_address,
-      params.trade.amount_in.token
+      coin_in,
     );
     if (user_input_coins.length == 0) {
       throw new Error(
@@ -97,18 +98,18 @@ export async function fetchTx(
       );
     }
     let total_input = user_input_coins.reduce((c, t) => c + BigInt(t.amount), 0n);
-    if (total_input < params.trade.amount_in.amount) {
+    if (total_input < params.trade.quote) {
       throw new Error(
         `HopApi > Error: user does not have enough amount in for trade. 
       User amount: ${total_input}. 
-      Trade amount: ${params.trade.amount_in.amount}`
+      Trade amount: ${params.trade.quote}`
       )
     }
   }
 
   // gas coins
   if(!params.sponsored) {
-    if (normalizeStructTag(params.trade.amount_in.token) != normalizeStructTag("0x2::sui::SUI") || user_input_coins.length == 0) {
+    if (normalizeStructTag(coin_in) != normalizeStructTag("0x2::sui::SUI") || user_input_coins.length == 0) {
       let fetched_gas_coins = await fetchCoins(
         client,
         params.sui_address,
@@ -126,7 +127,7 @@ export async function fetchTx(
     let single_output_coin: InputToken[] = await fetchCoins(
       client,
       params.sui_address,
-      params.trade.amount_out.token,
+      coin_in,
       1,
     );
     user_input_coins.push(...single_output_coin);

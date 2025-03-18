@@ -1,6 +1,6 @@
 import { HopApi } from "../api.js";
 import { swapAPIResponseSchema } from "../types/api.js";
-import { Trade } from "../types/trade.js";
+import { GammaTrade } from "../types/trade.js";
 import { getAmountOutWithCommission, isSuiType, makeAPIRequest } from "../util.js";
 
 export interface GetQuoteParams {
@@ -11,7 +11,7 @@ export interface GetQuoteParams {
 
 export interface GetQuoteResponse {
   amount_out_with_fee: bigint;
-  trade: Trade;
+  trade: GammaTrade;
 }
 
 export async function fetchQuote(
@@ -42,10 +42,10 @@ export async function fetchQuote(
 
     if(client.options.charge_fees_in_sui && isSuiType(params.token_in)) {
       // fee already charged
-      amount_out_with_fee = response.trade.amount_out.amount;
+      amount_out_with_fee = response.trade.quote;
     } else {
       amount_out_with_fee = getAmountOutWithCommission(
-        response.trade.amount_out.amount,
+        response.trade.quote,
         client.options.fee_bps
       );
     }

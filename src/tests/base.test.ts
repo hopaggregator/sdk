@@ -26,7 +26,7 @@ async function baseTest() {
   const coinInAmount = 100_000_000n;
   const coinIn = tx.splitCoins(tx.gas, [tx.pure.u64(coinInAmount)]);
 
-  const result = await api.fetchQuote({
+  await api.fetchQuote({
     // @ts-ignore
     amount_in: 1_000_000_000n,
     token_in: "0x2::sui::SUI",

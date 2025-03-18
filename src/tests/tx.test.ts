@@ -1,4 +1,4 @@
-import { HopApi } from "../index";
+import { HopApi } from "../index.js";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 
 // @ts-ignore
@@ -19,7 +19,7 @@ async function txTest(): Promise<void> {
       "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
   });
 
-  console.log("quote_result.trade.amount_in", quote_result.trade.amount_in.amount);
+  console.log("quote_result.trade.amount_in", quote_result.trade.quote);
 
   console.log("quote_result", quote_result);
 
@@ -34,7 +34,7 @@ async function txTest(): Promise<void> {
 
   console.log("tx_result", tx_result);
 
-  const result = await sui_client.dryRunTransactionBlock({ transactionBlock: await tx_result.transaction.build({ client: sui_client }) });
+  await sui_client.dryRunTransactionBlock({ transactionBlock: await tx_result.transaction.build({ client: sui_client }) });
   // console.log("result", JSON.stringify(result, null, 2));
 }
 
