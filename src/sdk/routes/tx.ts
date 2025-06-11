@@ -1,4 +1,5 @@
-import { Transaction, Argument, TransactionResult } from "@mysten/sui/transactions";
+import { Transaction, TransactionResult } from "@mysten/sui/transactions";
+import type { Argument } from "@mysten/sui/transactions";
 import { CoinStruct } from "@mysten/sui/client";
 import { HopApi } from "../api.js";
 import { makeAPIRequest } from "../util.js";

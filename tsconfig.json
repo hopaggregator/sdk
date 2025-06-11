@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "target": "ES2022",
-    "outDir": "./dist/esm",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "lib": ["ES2020", "DOM"],
 
     // build
     "types": ["node"],
@@ -30,8 +32,8 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "inlineSources": true
+    "inlineSources": true,
   },
   "include": ["src/**/*"],
-  "exclude": ["src/tests"]
-}
+  "exclude": ["node_modules", "dist", "src/tests"]
+} 
