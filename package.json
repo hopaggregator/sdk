@@ -1,6 +1,6 @@
 {
   "name": "@hop.ag/sdk",
-  "version": "4.0.16",
+  "version": "4.0.17",
   "description": "Official Hop SDK to access Hop Aggregator",
   "type": "module",
   "exports": {
