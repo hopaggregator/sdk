@@ -100,3 +100,26 @@ export const gammaTradeSchema = z.object({
 }).passthrough();
 
 export type GammaTrade = z.infer<typeof gammaTradeSchema>;
+
+const tokenAmountSchema = z.object({
+  token: z.string(),
+  amount: z.coerce.bigint(),
+});
+
+const tradeNodeSchema = z.object({
+  pool: tradePoolSchema,
+  weight: z.number().nonnegative(),
+  amount_in: tokenAmountSchema,
+  amount_out: tokenAmountSchema,
+});
+
+export type TradeNode = z.infer<typeof tradeNodeSchema>;
+
+export const tradeSchema = z.object({
+  nodes: z.record(tradeNodeSchema),
+  edges: z.record(z.array(z.string())),
+  amount_in: tokenAmountSchema,
+  amount_out: tokenAmountSchema,
+}).passthrough();
+
+export type Trade = z.infer<typeof tradeSchema>;
