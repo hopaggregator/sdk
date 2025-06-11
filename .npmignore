@@ -7,3 +7,5 @@
 .npmrc
 npm-debug.log
 src/tests/.env
+node_modules
+.github
