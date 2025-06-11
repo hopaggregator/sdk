@@ -1,0 +1,9 @@
+.*.swp
+._*
+.DS_Store
+.git
+.gitignore
+.npmignore
+.npmrc
+npm-debug.log
+src/tests/.env
