@@ -2,19 +2,18 @@ import { SuiClient } from "@mysten/sui/client";
 import {
   fetchQuote,
   GetQuoteParams,
-  GetQuoteResponse,
 } from "./routes/quote.js";
-import { fetchTx, GetTxParams, GetTxResponse } from "./routes/tx.js";
-import { fetchTokens, GetTokensResponse } from "./routes/tokens.js";
-import { fetchPrice, GetPriceParams, GetPriceResponse } from "./routes/price.js";
+import { Transaction } from "@mysten/sui/transactions";
+import { TradeBuilder } from "./builder/index.js";
+import { BuildTxParams } from "./routes/tx.js";
+import { GammaQuote } from "./types/quote.js";
 
 export interface HopApiOptions {
-  api_key: string;
-  fee_bps: number; // fee to charge in bps (50% split with Hop / max fee of 5%)
+  fee_bps: bigint; // fee to charge in bps (50% split with Hop / max fee of 5%)
   charge_fees_in_sui?: boolean,
 
   fee_wallet?: string; // sui address
-  hop_server_url?: string;
+  hop_server_url?: string; // custom hop server url
 }
 
 export class HopApi {
@@ -27,22 +26,11 @@ export class HopApi {
     this.options = options;
     this.use_v2 = use_v2;
 
-    this.validate_api_key();
     this.validate_fee();
   }
 
-  private validate_api_key() {
-    if (!this.options.api_key.startsWith("hopapi")) {
-      console.error(
-        "Error > Invalid api key:",
-        this.options.api_key,
-        ". Please contact us at hop.ag to request a new key.",
-      );
-    }
-  }
-
   private validate_fee() {
-    let fee_bps = this.options.fee_bps;
+    const fee_bps = Number(this.options.fee_bps);
 
     if (fee_bps < 0) {
       console.error("> fee_bps must be positive.");
@@ -50,29 +38,25 @@ export class HopApi {
       console.error("> fee_bps must be less than or equal to 5% (500 bps).");
     }
 
-    this.options.fee_bps = Math.max(this.options.fee_bps, 0);
-    this.options.fee_bps = Math.min(this.options.fee_bps, 500);
-    this.options.fee_bps = Number(this.options.fee_bps.toFixed(0));
+    this.options.fee_bps = BigInt(Math.min(500, Math.max(fee_bps, 0)));
   }
 
   /*
    * Routes
    */
 
-  async fetchQuote(quote: GetQuoteParams): Promise<GetQuoteResponse> {
+  async fetchQuote(quote: GetQuoteParams): Promise<GammaQuote | null> {
     return fetchQuote(this, quote);
   }
 
-  async fetchTx(tx: GetTxParams): Promise<GetTxResponse> {
-    return fetchTx(this, tx);
+  buildTx(params: BuildTxParams): Transaction {
+    const builder = new TradeBuilder(params.quote, BigInt(this.options.fee_bps));
+
+    return builder.compileToTX({
+      senderAddress: params.sender_address,
+      userInputCoins: params.user_input_coins,
+      maxSlippageBps: params.max_slippage_bps
+    });
   }
 
-  async fetchTokens(): Promise<GetTokensResponse> {
-    return fetchTokens(this);
-  }
-  
-  async fetchPrice(price: GetPriceParams): Promise<GetPriceResponse> {
-    return fetchPrice(this, price);
-  }
-  
 }

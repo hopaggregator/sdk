@@ -1,23 +1,17 @@
 {
   "name": "@hop.ag/sdk",
-  "version": "4.0.17",
+  "version": "4.1.9",
   "description": "Official Hop SDK to access Hop Aggregator",
   "type": "module",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
     }
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "dist/index.d.ts",
   "scripts": {
     "test:quote": "npx tsx src/tests/quote.test.ts",
     "test:tx": "npx tsx src/tests/tx.test.ts",
@@ -25,20 +19,20 @@
     "test:base": "npx tsx src/tests/base.test.ts",
     "test:price": "npx tsx src/tests/price.test.ts",
     "test:schema": "npx tsx src/tests/schema.test.ts",
-    "build": "ts-bridge build --project ./tsconfig.json --clean",
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc && echo '{\"type\":\"module\"}' > dist/esm/package.json",
+    "build:cjs": "tsc --project tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "pretty": "prettier . --write"
   },
   "author": "Hop Aggregator",
   "license": "ISC",
   "devDependencies": {
-    "@ts-bridge/cli": "^0.6.3",
-    "tsx": "^4.19.3",
-    "typescript": "^5.8.2",
     "@types/node": "^20.14.2",
-    "prettier": "3.2.5"
+    "prettier": "3.2.5",
+    "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@mysten/sui": "^1.28.2",
+    "@mysten/sui": "^1.2.0",
     "cross-fetch": "^4.0.0",
     "tslib": "^2.6.2",
     "zod": "^3.23.8"

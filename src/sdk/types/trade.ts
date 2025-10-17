@@ -15,10 +15,11 @@ export enum SuiExchange {
   TURBOSFUN = "TURBOSFUN",
   SPRINGSUI = "SPRINGSUI",
   STSUI = "STSUI",
-  OBRIC = "OBRIC"
+  OBRIC = "OBRIC",
+  MOMENTUM = "MOMENTUM"
 }
 
-const suiExchangeSchema = z.nativeEnum(SuiExchange).or(z.string());
+export const suiExchangeSchema = z.nativeEnum(SuiExchange);
 
 export const poolExtraSchema = z.union([
   z.object({
@@ -65,61 +66,8 @@ export const poolExtraSchema = z.union([
       weighthook_version: z.number()
     })
   }),
-  z.object({}).passthrough()
+  z.object({}).passthrough(),
+  z.null()
 ]);
 
 export type PoolExtra = z.infer<typeof poolExtraSchema>;
-
-const tradePoolSchema = z.object({
-  object_id: z.string(),
-  initial_shared_version: z.number().nullable(),
-  sui_exchange: suiExchangeSchema,
-  tokens: z.array(z.string()).nonempty(),
-  is_active: z.boolean(),
-  extra: poolExtraSchema.nullable(),
-}).passthrough();
-
-export type TradePool = z.infer<typeof tradePoolSchema>;
-
-const routeNodeSchema = z.object({
-  coin_in: z.string(),
-  coin_out: z.string(),
-  pool_id: z.string(),
-  amount_in: z.bigint(),
-  amount_out: z.bigint()
-});
-
-export type RouteNode = z.infer<typeof routeNodeSchema>;
-
-export const gammaTradeSchema = z.object({
-  pools: z.map(z.string(), tradePoolSchema),
-  routes: z.array(z.array(routeNodeSchema)),
-
-  amount_in: z.bigint(),
-  quote: z.bigint(),
-}).passthrough();
-
-export type GammaTrade = z.infer<typeof gammaTradeSchema>;
-
-const tokenAmountSchema = z.object({
-  token: z.string(),
-  amount: z.coerce.bigint(),
-});
-
-const tradeNodeSchema = z.object({
-  pool: tradePoolSchema,
-  weight: z.number().nonnegative(),
-  amount_in: tokenAmountSchema,
-  amount_out: tokenAmountSchema,
-});
-
-export type TradeNode = z.infer<typeof tradeNodeSchema>;
-
-export const tradeSchema = z.object({
-  nodes: z.record(tradeNodeSchema),
-  edges: z.record(z.array(z.string())),
-  amount_in: tokenAmountSchema,
-  amount_out: tokenAmountSchema,
-}).passthrough();
-
-export type Trade = z.infer<typeof tradeSchema>;

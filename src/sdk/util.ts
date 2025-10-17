@@ -5,7 +5,6 @@ import { normalizeStructTag } from "@mysten/sui/utils";
 
 export interface RequestParams {
   hop_server_url?: string;
-  api_key: string;
   data: object;
   method: "get" | "post";
 }
@@ -27,7 +26,6 @@ export async function makeAPIRequest<O>({
         body: JSON.stringify(
           {
             ...options.data,
-            api_key: options.api_key
           },
           (_, v) => {
             const isBigIntString = typeof v === 'string' && /^\d+n$/.test(v);
